@@ -1,0 +1,708 @@
+/* Wijaya Barbershop Modern & Animated Styles */
+:root {
+    --primary: #10b981;
+    --primary-hover: #059669;
+    --primary-dark: #064e3b;
+    --accent: #f59e0b;
+    --dark-bg: #0b1120;
+    --dark-card: #0f172a;
+    --dark-border: #1e293b;
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: #f8fafc;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 9px;
+}
+::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+    background: #10b981;
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #059669;
+}
+
+/* ----------------------------------------------------
+   1. KEYFRAME ANIMATIONS
+---------------------------------------------------- */
+@keyframes floatSlow {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-12px) rotate(1.2deg);
+    }
+}
+
+@keyframes floatReverse {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(12px) rotate(-1.2deg);
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        opacity: 0.45;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.85;
+        transform: scale(1.08);
+    }
+}
+
+@keyframes barberPoleScroll {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 28px 56px;
+    }
+}
+
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes beaconPing {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    75%, 100% {
+        transform: scale(2.3);
+        opacity: 0;
+    }
+}
+
+@keyframes shimmerSweep {
+    0% {
+        transform: translateX(-150%) skewX(-25deg);
+    }
+    100% {
+        transform: translateX(200%) skewX(-25deg);
+    }
+}
+
+/* ----------------------------------------------------
+   2. ANIMATION UTILITY CLASSES
+---------------------------------------------------- */
+.animate-float {
+    animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+    animation: floatReverse 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+    animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientFlow 6s ease infinite;
+}
+
+.barber-pole {
+    background: repeating-linear-gradient(
+        -45deg,
+        #ef4444,
+        #ef4444 6px,
+        #ffffff 6px,
+        #ffffff 12px,
+        #2563eb 12px,
+        #2563eb 18px,
+        #ffffff 18px,
+        #ffffff 24px
+    );
+    background-size: 28px 56px;
+    animation: barberPoleScroll 1.8s linear infinite;
+}
+
+.beacon-pulse {
+    position: relative;
+}
+.beacon-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    background: inherit;
+    animation: beaconPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ----------------------------------------------------
+   3. SCROLL REVEAL ANIMATIONS (IntersectionObserver)
+---------------------------------------------------- */
+.reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+.reveal-left.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+.reveal-right.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.reveal-zoom {
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+.reveal-zoom.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Stagger Delays */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-400 { transition-delay: 400ms; }
+.delay-500 { transition-delay: 500ms; }
+
+/* ----------------------------------------------------
+   4. GLASSMORPHISM & MODERN CARD EFFECT
+---------------------------------------------------- */
+.glass-dark {
+    background: rgba(11, 17, 32, 0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-emerald {
+    background: rgba(6, 78, 59, 0.25);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.card-premium {
+    transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-premium:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 22px 35px -10px rgba(16, 185, 129, 0.2), 0 8px 16px -6px rgba(0, 0, 0, 0.08);
+}
+
+.card-premium .img-zoom {
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.card-premium:hover .img-zoom {
+    transform: scale(1.08);
+}
+
+/* Shimmer Button Effect */
+.shimmer-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: translateX(-150%) skewX(-20deg);
+    transition: transform 0.75s ease;
+}
+
+.shimmer-btn:hover::before {
+    transform: translateX(250%) skewX(-20deg);
+}
+
+/* Marquee Ticker */
+.marquee-wrapper {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.marquee-content {
+    display: inline-flex;
+    animation: marquee 24s linear infinite;
+}
+
+.marquee-content:hover {
+    animation-play-state: paused;
+}
+
+/* Floating Quick Dial Button */
+.floating-dial-btn {
+    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5), 0 8px 10px -6px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.floating-dial-btn:hover {
+    transform: scale(1.1) rotate(6deg);
+}
+
+/* Print styles for Receipt */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #printable-receipt, #printable-receipt * {
+        visibility: visible;
+    }
+    #printable-receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    .no-print {
+        display: none !important;
+    }
+}
+
+
+/* ----------------------------------------------------
+   5. BESPOKE LUXURY BARBERSHOP ANIMATIONS & EFFECTS
+   (Laser Border Beam, Realistic Scissors Snip, Sonar Radar,
+   Interactive 3D Specular Tilt, & Magnetic HUD)
+---------------------------------------------------- */
+
+/* Laser Border Beam rotating conic gradient */
+@property --beam-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes rotateBorderBeam {
+    0% {
+        --beam-angle: 0deg;
+    }
+    100% {
+        --beam-angle: 360deg;
+    }
+}
+
+.border-beam-card {
+    position: relative;
+    border-radius: 1.5rem;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.border-beam-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(from var(--beam-angle, 0deg), transparent 25%, #10b981 40%, #fbbf24 50%, #10b981 60%, transparent 75%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: rotateBorderBeam 4.5s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Fallback border animation for legacy browsers */
+@keyframes neonBorderPulse {
+    0%, 100% {
+        box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.35), inset 0 0 12px -3px rgba(16, 185, 129, 0.15);
+    }
+    50% {
+        box-shadow: 0 0 25px -2px rgba(245, 158, 11, 0.45), inset 0 0 18px -2px rgba(245, 158, 11, 0.2);
+    }
+}
+
+.neon-pulse-card {
+    animation: neonBorderPulse 5s ease-in-out infinite;
+}
+
+/* Realistic Scissor Snip Animation */
+@keyframes scissorTopBlade {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    20% {
+        transform: rotate(-22deg);
+    }
+    40% {
+        transform: rotate(0deg);
+    }
+    60% {
+        transform: rotate(-22deg);
+    }
+    80% {
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes scissorBottomBlade {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    20% {
+        transform: rotate(22deg);
+    }
+    40% {
+        transform: rotate(0deg);
+    }
+    60% {
+        transform: rotate(22deg);
+    }
+    80% {
+        transform: rotate(0deg);
+    }
+}
+
+.scissor-snip-container {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+.scissor-snip-container:hover .scissor-top,
+.scissor-snip-auto .scissor-top {
+    transform-origin: 30% 50%;
+    animation: scissorTopBlade 1.2s ease-in-out infinite;
+}
+
+.scissor-snip-container:hover .scissor-bottom,
+.scissor-snip-auto .scissor-bottom {
+    transform-origin: 30% 50%;
+    animation: scissorBottomBlade 1.2s ease-in-out infinite;
+}
+
+/* Sonar Radar Sweep for Live Queue & Active Staff */
+@keyframes sonarSweepAnim {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes sonarRingPulseAnim {
+    0% {
+        transform: scale(0.3);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(2.4);
+        opacity: 0;
+    }
+}
+
+.sonar-radar-box {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, rgba(6, 78, 59, 0.7) 70%);
+    border: 1px solid rgba(16, 185, 129, 0.6);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.sonar-sweep-hand {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 1.5px;
+    background: linear-gradient(90deg, #10b981, rgba(16, 185, 129, 0.1));
+    transform-origin: 0% 0%;
+    animation: sonarSweepAnim 2.6s linear infinite;
+}
+
+.sonar-ring {
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+    animation: sonarRingPulseAnim 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    pointer-events: none;
+}
+
+/* Barbershop Lounge Audio Equalizer */
+@keyframes eqBounceAnim {
+    0%, 100% {
+        height: 4px;
+    }
+    50% {
+        height: 16px;
+    }
+}
+
+.eq-container {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 18px;
+}
+
+.eq-bar {
+    width: 2.5px;
+    background: #10b981;
+    border-radius: 9999px;
+    display: inline-block;
+}
+.eq-bar:nth-child(1) { animation: eqBounceAnim 1s ease-in-out infinite 0.1s; }
+.eq-bar:nth-child(2) { animation: eqBounceAnim 0.75s ease-in-out infinite 0.3s; }
+.eq-bar:nth-child(3) { animation: eqBounceAnim 1.25s ease-in-out infinite 0.2s; }
+.eq-bar:nth-child(4) { animation: eqBounceAnim 0.9s ease-in-out infinite 0.4s; }
+
+/* Interactive 3D Card Tilt with Specular Glare */
+.tilt-card-luxury {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    will-change: transform;
+}
+
+.tilt-card-luxury:hover {
+    box-shadow: 0 25px 40px -15px rgba(16, 185, 129, 0.25), 0 0 20px -3px rgba(245, 158, 11, 0.15);
+}
+
+.specular-glare {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: radial-gradient(circle 280px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.18) 0%, transparent 65%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 5;
+}
+
+.tilt-card-luxury:hover .specular-glare {
+    opacity: 1;
+}
+
+/* Magnetic Button Pull */
+.btn-magnetic {
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-magnetic:hover {
+    box-shadow: 0 12px 28px -6px rgba(16, 185, 129, 0.45);
+}
+
+/* Click Ripple Wave */
+.ripple-circle {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: rippleWave 0.6s cubic-bezier(0, 0, 0.2, 1);
+    background-color: rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+}
+
+@keyframes rippleWave {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Asynchronous Floating Frequencies */
+@keyframes floatFreq1 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(1.5deg); }
+}
+
+@keyframes floatFreq2 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-14px) rotate(-2deg); }
+}
+
+@keyframes floatFreq3 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+.float-async-1 {
+    animation: floatFreq1 4.2s ease-in-out infinite;
+}
+
+.float-async-2 {
+    animation: floatFreq2 5.6s ease-in-out infinite;
+}
+
+.float-async-3 {
+    animation: floatFreq3 3.8s ease-in-out infinite;
+}
+
+/* HUD Corner Brackets for Admin & Luxury Cards */
+.hud-card {
+    position: relative;
+}
+
+.hud-corner {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-color: #10b981;
+    pointer-events: none;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.hud-card:hover .hud-corner {
+    opacity: 1;
+    width: 12px;
+    height: 12px;
+}
+
+.hud-corner-tl { top: 6px; left: 6px; border-top: 2px solid; border-left: 2px solid; }
+.hud-corner-tr { top: 6px; right: 6px; border-top: 2px solid; border-right: 2px solid; }
+.hud-corner-bl { bottom: 6px; left: 6px; border-bottom: 2px solid; border-left: 2px solid; }
+.hud-corner-br { bottom: 6px; right: 6px; border-bottom: 2px solid; border-right: 2px solid; }
+
+/* ----------------------------------------------------
+   13. BARBERSHOP LOUNGE MUSIC PLAYER STYLES
+---------------------------------------------------- */
+@keyframes spinVinyl {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.vinyl-disc {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #0f172a 0%, #020617 35%, #1e293b 40%, #020617 65%, #0f172a 70%, #000 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 0 2px rgba(255, 255, 255, 0.15);
+    animation: spinVinyl 5.5s linear infinite;
+    animation-play-state: paused;
+    flex-shrink: 0;
+}
+
+.vinyl-disc.is-playing {
+    animation-play-state: running;
+}
+
+.vinyl-disc::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.vinyl-disc::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #020617;
+}
+
+/* Volume Slider Styling */
+.music-volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    transition: all 0.2s;
+}
+
+.music-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #10b981;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+    transition: transform 0.15s ease;
+}
+
+.music-volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+}
