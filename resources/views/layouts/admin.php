@@ -146,15 +146,6 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/admin';
                 </div>
             </div>
 
-            <div class="mb-2">
-                <p class="text-[9px] uppercase tracking-wider font-extrabold text-slate-400 mb-1 px-0.5">Ganti Role Cepat:</p>
-                <div class="grid grid-cols-3 gap-1 text-[10px]">
-                    <a href="/switch-account?username=reza" class="py-1.5 px-1.5 rounded-lg bg-white/5 hover:bg-emerald-600/30 border border-white/10 text-emerald-300 font-bold text-center transition truncate" title="Masuk sebagai Pelanggan (Reza)">Pelanggan</a>
-                    <a href="/switch-account?username=mely" class="py-1.5 px-1.5 rounded-lg bg-white/5 hover:bg-teal-600/30 border border-white/10 text-teal-300 font-bold text-center transition truncate" title="Masuk sebagai Kasir (Mely)">Kasir</a>
-                    <a href="/switch-account?username=doni" class="py-1.5 px-1.5 rounded-lg bg-white/5 hover:bg-amber-600/30 border border-white/10 text-amber-300 font-bold text-center transition truncate" title="Masuk sebagai Capster (Doni)">Capster</a>
-                </div>
-            </div>
-
             <div class="grid grid-cols-2 gap-2 text-center text-xs">
                 <a href="/" class="py-2 px-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 font-semibold transition flex items-center justify-center space-x-1 border border-white/5 shadow-sm">
                     <i class="fas fa-home text-[10px]"></i>

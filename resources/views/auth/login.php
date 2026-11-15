@@ -26,9 +26,9 @@
             </label>
             <div class="relative">
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
-                    <i class="fas fa-envelope"></i>
+                    <i class="fas fa-user"></i>
                 </span>
-                <input type="text" id="login" name="login" required placeholder="admin / customer@wijayabarber.com" 
+                <input type="text" id="login" name="login" required placeholder="Masukkan username atau email Anda" 
                     class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-900 text-sm transition outline-none">
             </div>
         </div>
@@ -48,69 +48,6 @@
             </div>
         </div>
 
-        <!-- Akun Demo Cepat untuk Pengujian Skripsi (Klik untuk Isi Otomatis) -->
-        <div class="p-3.5 bg-slate-50 border border-slate-200/90 rounded-2xl text-xs text-slate-600 shadow-sm">
-            <div class="flex items-center justify-between mb-2">
-                <span class="font-extrabold text-slate-800 flex items-center space-x-1.5">
-                    <i class="fas fa-key text-emerald-600"></i>
-                    <span>Akun Pengujian Demo (Klik untuk Isi Cepat):</span>
-                </span>
-                <span class="text-[10px] text-slate-400 font-mono">pass: password123</span>
-            </div>
-            <div class="grid grid-cols-2 gap-2 text-[11px]">
-                <button type="button" onclick="fillLoginCreds('agung', 'password123')" class="p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition flex items-center space-x-2 group">
-                    <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs group-hover:bg-emerald-600 group-hover:text-white transition">A</span>
-                    <div>
-                        <strong class="text-slate-800 block leading-tight">Admin</strong>
-                        <span class="text-[10px] text-slate-400 font-mono">agung</span>
-                    </div>
-                </button>
-                <button type="button" onclick="fillLoginCreds('mely', 'password123')" class="p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition flex items-center space-x-2 group">
-                    <span class="w-6 h-6 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-xs group-hover:bg-teal-600 group-hover:text-white transition">K</span>
-                    <div>
-                        <strong class="text-slate-800 block leading-tight">Kasir</strong>
-                        <span class="text-[10px] text-slate-400 font-mono">mely</span>
-                    </div>
-                </button>
-                <button type="button" onclick="fillLoginCreds('doni', 'password123')" class="p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition flex items-center space-x-2 group">
-                    <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs group-hover:bg-amber-600 group-hover:text-white transition">C</span>
-                    <div>
-                        <strong class="text-slate-800 block leading-tight">Capster</strong>
-                        <span class="text-[10px] text-slate-400 font-mono">doni</span>
-                    </div>
-                </button>
-                <button type="button" onclick="fillLoginCreds('juni', 'password123')" class="p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition flex items-center space-x-2 group">
-                    <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs group-hover:bg-blue-600 group-hover:text-white transition">P</span>
-                    <div>
-                        <strong class="text-slate-800 block leading-tight">Pelanggan 1</strong>
-                        <span class="text-[10px] text-slate-400 font-mono">juni</span>
-                    </div>
-                </button>
-                <button type="button" onclick="fillLoginCreds('direktur', 'password123')" class="p-2 rounded-xl bg-white border border-slate-200 hover:border-purple-500 hover:bg-purple-50/50 text-left transition flex items-center space-x-2 group">
-                    <span class="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs group-hover:bg-purple-600 group-hover:text-white transition">D</span>
-                    <div>
-                        <strong class="text-slate-800 block leading-tight">Direktur</strong>
-                        <span class="text-[10px] text-slate-400 font-mono">direktur</span>
-                    </div>
-                </button>
-                <button type="button" onclick="fillLoginCreds('reza', 'password123')" class="p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition flex items-center space-x-2 group">
-                    <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs group-hover:bg-indigo-600 group-hover:text-white transition">P</span>
-                    <div>
-                        <strong class="text-slate-800 block leading-tight">Pelanggan 3</strong>
-                        <span class="text-[10px] text-slate-400 font-mono">reza</span>
-                    </div>
-                </button>
-            </div>
-
-            <!-- Panduan Fleksibel Login Pelanggan Bebas -->
-            <div class="mt-3 p-2.5 rounded-xl bg-emerald-50/90 border border-emerald-200/80 text-[11px] text-emerald-900 flex items-start space-x-2">
-                <i class="fas fa-magic text-emerald-600 mt-0.5 flex-shrink-0"></i>
-                <div class="leading-relaxed">
-                    <strong>Bisa Login Nama Apa Saja:</strong> Masukkan nama / username pelanggan bebas apa saja dengan password <span class="bg-white px-1.5 py-0.5 rounded text-emerald-700 font-mono font-bold border border-emerald-200">password123</span>. Sistem otomatis mengautentikasi dan langsung mengarahkan Anda ke katalog pangkas rambut.
-                </div>
-            </div>
-        </div>
-
         <button type="submit" id="loginSubmitBtn"
             class="w-full py-4 px-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black rounded-xl transition duration-300 shadow-xl shadow-emerald-600/35 text-xs uppercase tracking-wider shimmer-btn flex items-center justify-center space-x-2">
             <span id="loginBtnText">MASUK SEKARANG</span>
@@ -118,14 +55,6 @@
         </button>
 
         <script>
-            function fillLoginCreds(u, p) {
-                const loginEl = document.getElementById('login');
-                const passEl = document.getElementById('password');
-                if (loginEl) loginEl.value = u;
-                if (passEl) passEl.value = p;
-                if (loginEl) loginEl.focus();
-            }
-
             document.addEventListener('DOMContentLoaded', function() {
                 const form = document.getElementById('loginForm');
                 const submitBtn = document.getElementById('loginSubmitBtn');

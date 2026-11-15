@@ -225,31 +225,10 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
                                     <i class="fas fa-list-ul text-xs text-slate-400 w-4"></i>
                                     <span>Pesanan Saya</span>
                                 </a>
-                                <div class="px-3 py-2 mt-1 border-t border-slate-100 bg-slate-50/70">
-                                    <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5 px-1">Ganti Akun Cepat (1-Klik):</p>
-                                    <div class="grid grid-cols-2 gap-1.5 text-[11px]">
-                                        <a href="/switch-account?username=reza" class="px-2 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-emerald-500 hover:text-emerald-700 font-bold text-slate-700 flex items-center space-x-1.5 transition shadow-2xs">
-                                            <i class="fas fa-user text-emerald-500 text-[10px]"></i>
-                                            <span class="truncate">Pelanggan</span>
-                                        </a>
-                                        <a href="/switch-account?username=mely" class="px-2 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-teal-500 hover:text-teal-700 font-bold text-slate-700 flex items-center space-x-1.5 transition shadow-2xs">
-                                            <i class="fas fa-cash-register text-teal-500 text-[10px]"></i>
-                                            <span class="truncate">Kasir</span>
-                                        </a>
-                                        <a href="/switch-account?username=doni" class="px-2 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-700 font-bold text-slate-700 flex items-center space-x-1.5 transition shadow-2xs">
-                                            <i class="fas fa-scissors text-amber-500 text-[10px]"></i>
-                                            <span class="truncate">Capster</span>
-                                        </a>
-                                        <a href="/switch-account?username=agung" class="px-2 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-indigo-500 hover:text-indigo-700 font-bold text-slate-700 flex items-center space-x-1.5 transition shadow-2xs">
-                                            <i class="fas fa-user-shield text-indigo-500 text-[10px]"></i>
-                                            <span class="truncate">Admin</span>
-                                        </a>
-                                    </div>
-                                </div>
                                 <hr class="my-1 border-slate-100">
                                 <a href="/logout" class="flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 font-bold transition">
                                     <i class="fas fa-sign-out-alt text-xs w-4"></i>
-                                    <span>Keluar / Login Akun Lain</span>
+                                    <span>Keluar (Logout)</span>
                                 </a>
                             </div>
                         </div>

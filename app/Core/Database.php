@@ -198,7 +198,7 @@ class Database
                 if (!$checkSample) {
                     $pdo->exec("INSERT INTO orders (order_code, user_id, service_type, barber_id, subtotal, discount, tax, delivery_fee, grand_total, status, payment_method, notes, customer_address, area_zone, queue_number, queue_time, scheduled_at, created_at) VALUES
                         ('ORD1778419901', 7, 'home_service', 4, '50000', '0', '5000', 15000, '70000', 'pending', 'qris', 'Tolong bawa peralatan lengkap & pomade waterbased', 'Jl. AH Nasution No. 45, Yosodadi, Kec. Metro Timur (Rumah Pagar Hitam sebelah Masjid)', 'Metro Timur / Barat / Utara / Selatan', 6, '2026-11-06 14:00:00', '2026-11-06 14:00:00', '2026-11-06 10:30:00');");
-                    $lastId = (int)$pdo->lastInsertId();
+                    $lastId = (int) $pdo->lastInsertId();
                     if ($lastId > 0) {
                         $pdo->exec("INSERT INTO order_items (order_id, item_id, quantity, price, tax, total_price) VALUES
                             ({$lastId}, 2, 1, 50000, 5000, 55000);");
@@ -268,7 +268,8 @@ class Database
         try {
             $orderCols = array_column($pdo->query("PRAGMA table_info(orders)")->fetchAll(), 'name');
             foreach ($_SESSION['serverless_orders'] as $oid => $orderData) {
-                if (!is_array($orderData) || empty($orderData['order_code'])) continue;
+                if (!is_array($orderData) || empty($orderData['order_code']))
+                    continue;
                 $items = $orderData['_items'] ?? [];
                 unset($orderData['_items']);
 
@@ -290,7 +291,8 @@ class Database
                         $filtered[$k] = $v;
                     }
                 }
-                if (empty($filtered)) continue;
+                if (empty($filtered))
+                    continue;
 
                 $cols = array_keys($filtered);
                 $colList = '`' . implode('`, `', $cols) . '`';
@@ -410,7 +412,7 @@ SQL;
 
         // Seeding Data
         $passHash = password_hash('password123', PASSWORD_BCRYPT);
-        
+
         $pdo->exec("INSERT INTO roles (id, role_name, description) VALUES
             (1, 'admin', 'Administrator / Direktur Utama Wijaya Barbershop'),
             (2, 'kasir', 'Kasir Pengelola Transaksi dan Pembayaran'),
