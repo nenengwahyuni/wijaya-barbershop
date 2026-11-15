@@ -9,6 +9,7 @@ echo   Repository: https://github.com/nenengwahyuni/wijaya-barbershop.git
 echo ======================================================================
 echo.
 echo [1/3] Menyegarkan sesi login GitHub (jika muncul jendela Sign in with Browser, silakan klik Authorize)...
+cmdkey /delete:git:https://github.com >nul 2>&1
 (
 echo protocol=https
 echo host=github.com
