@@ -70,7 +70,7 @@ class AuthController extends Controller
                 $email = $cleanUsername . '_' . rand(1000, 9999) . '@wijayabarber.com';
             }
 
-            $phone = '0812' . rand(10000000, 99999999);
+            $phone = '';
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
             try {

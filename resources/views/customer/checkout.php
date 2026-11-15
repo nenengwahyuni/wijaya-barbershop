@@ -166,9 +166,9 @@
                                     <i class="fab fa-whatsapp text-emerald-600 text-base"></i>
                                 </span>
                                 <input type="tel" id="phone" name="phone" required 
-                                    value="<?= htmlspecialchars($user['phone'] ?? '') ?>" 
-                                    placeholder="0812xxxxxxxx"
-                                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-900 text-sm transition outline-none">
+                                    value="" autocomplete="one-time-code" readonly onfocus="this.removeAttribute('readonly');"
+                                    placeholder="Ketik nomor WhatsApp aktif (contoh: 0812xxxxxxxx)"
+                                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-900 text-sm transition outline-none bg-white">
                             </div>
                             <span class="text-[11px] text-slate-400 mt-1 block">Nomor aktif untuk konfirmasi jadwal antrean / kunjungan barber.</span>
                         </div>
