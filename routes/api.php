@@ -12,6 +12,8 @@ $router->post('/api/midtrans/simulate-success', [ApiController::class, 'simulate
 // Order Status & QRIS Auto-Confirm API
 $router->get('/api/order/status', [ApiController::class, 'orderStatus']);
 $router->post('/api/order/qris-auto-confirm', [ApiController::class, 'qrisAutoConfirm']);
+$router->get('/api/qris/webhook', [ApiController::class, 'qrisWebhook']);
+$router->post('/api/qris/webhook', [ApiController::class, 'qrisWebhook']);
 
 // Vouchers & Loyalty API
 $router->post('/api/vouchers/apply', [PromotionController::class, 'apiApplyVoucher']);

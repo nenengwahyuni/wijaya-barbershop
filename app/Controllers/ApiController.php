@@ -117,12 +117,52 @@ class ApiController extends Controller
         ]);
     }
 
+    private static function getSignalFilePath(): string
+    {
+        return rtrim(sys_get_temp_dir(), '/\\') . '/wijaya_qris_paid_signal.json';
+    }
+
+    public static function recordQrisPaidSignal(?string $orderCode = null): void
+    {
+        $file = self::getSignalFilePath();
+        $data = [];
+        if (file_exists($file)) {
+            $raw = @file_get_contents($file);
+            $decoded = $raw ? json_decode($raw, true) : [];
+            if (is_array($decoded)) $data = $decoded;
+        }
+        $now = time();
+        $data['last_paid_ts'] = $now;
+        if ($orderCode) {
+            $data['orders'][$orderCode] = $now;
+        }
+        @file_put_contents($file, json_encode($data));
+    }
+
+    private static function isSignalPaidForOrder(string $orderCode, int $orderCreatedTs): bool
+    {
+        $file = self::getSignalFilePath();
+        if (!file_exists($file)) return false;
+        $raw = @file_get_contents($file);
+        $data = $raw ? json_decode($raw, true) : null;
+        if (!is_array($data)) return false;
+
+        if (!empty($data['orders'][$orderCode])) {
+            return true;
+        }
+        if (!empty($data['last_paid_ts']) && $orderCreatedTs > 0 && $data['last_paid_ts'] >= $orderCreatedTs) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Cek status pesanan secara real-time via AJAX
      */
     public function orderStatus(Request $request, Response $response)
     {
         $code = trim($request->input('code', ''));
+        $createdTs = (int) $request->input('ts', 0);
         if (!$code) {
             $this->json(['status' => 'error', 'message' => 'Kode order diperlukan'], 400);
         }
@@ -130,6 +170,14 @@ class ApiController extends Controller
         $order = Order::findByCode($code);
         if (!$order) {
             $this->json(['status' => 'error', 'message' => 'Pesanan tidak ditemukan'], 404);
+        }
+
+        if ($order['status'] === 'pending' && self::isSignalPaidForOrder($code, $createdTs)) {
+            Order::update($order['id'], [
+                'status' => 'settlement',
+                'payment_method' => 'qris'
+            ]);
+            $order['status'] = 'settlement';
         }
 
         $isSettlement = in_array($order['status'], ['settlement', 'completed']);
@@ -140,6 +188,31 @@ class ApiController extends Controller
             'order_status' => $order['status'],
             'is_settlement' => $isSettlement,
             'payment_method' => $order['payment_method']
+        ]);
+    }
+
+    /**
+     * Webhook / Remote Trigger Pembayaran QRIS (Bisa dipanggil dari HP Kasir atau Notifikasi Forwarder)
+     */
+    public function qrisWebhook(Request $request, Response $response)
+    {
+        $code = trim($request->input('code', $request->input('order_code', '')));
+        self::recordQrisPaidSignal($code ?: null);
+
+        try {
+            $pdo = \App\Core\Database::getConnection();
+            if ($code) {
+                $stmt = $pdo->prepare("UPDATE orders SET status = 'settlement', payment_method = 'qris' WHERE order_code = ?");
+                $stmt->execute([$code]);
+            } else {
+                $pdo->exec("UPDATE orders SET status = 'settlement' WHERE payment_method = 'qris' AND status = 'pending'");
+            }
+        } catch (\Throwable $e) {}
+
+        $this->json([
+            'status' => 'success',
+            'message' => 'Sinyal pembayaran QRIS Lunas berhasil dikirim! Layar pelanggan otomatis berbunyi.',
+            'order_code' => $code ?: 'ALL_PENDING_QRIS'
         ]);
     }
 

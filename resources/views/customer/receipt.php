@@ -15,9 +15,9 @@ $autoWa = (!$isQrisPending) && ($autoWa ?? (isset($_GET['auto_wa']) || isset($_G
                 <span class="text-xs font-black uppercase tracking-wider text-emerald-400">Pembayaran QRIS</span>
             </div>
             <div class="flex items-center space-x-2">
-                <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-wider border border-emerald-500/30">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span id="qris-status-pill">Otomatis Lunas</span>
+                <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-wider border border-amber-500/30">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                    <span id="qris-status-pill">Menunggu Pembayaran</span>
                 </span>
                 <button type="button" onclick="closeQrisModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition">
                     <i class="fas fa-times text-xs"></i>
@@ -55,21 +55,17 @@ $autoWa = (!$isQrisPending) && ($autoWa ?? (isset($_GET['auto_wa']) || isset($_G
             </div>
         </div>
 
-        <!-- Auto-Detection Live Scanner Card (Deteksi Otomatis & Suara Lunas Langsung) -->
-        <div id="qris-auto-detect-box" class="mt-3 p-3 rounded-2xl bg-gradient-to-r from-emerald-950/90 via-slate-900 to-emerald-950/90 border border-emerald-500/50 text-left shadow-lg">
-            <div class="flex items-center justify-between text-xs mb-1.5">
+        <!-- Status Pemantauan Pembayaran Real-Time (Tanpa Timer Hitung Mundur Palsu) -->
+        <div id="qris-auto-detect-box" class="mt-3 p-3 rounded-2xl bg-gradient-to-r from-slate-800/90 via-slate-900 to-slate-800/90 border border-emerald-500/40 text-left shadow-lg">
+            <div class="flex items-center justify-between text-xs mb-1">
                 <span class="text-emerald-400 font-extrabold flex items-center space-x-1.5">
-                    <i class="fas fa-radar fa-spin text-emerald-400 text-xs"></i>
-                    <span id="qris-detect-title">Mendeteksi Pembayaran Otomatis...</span>
+                    <i class="fas fa-circle-notch fa-spin text-emerald-400 text-xs"></i>
+                    <span id="qris-detect-title">Menunggu Scan & Pembayaran QRIS...</span>
                 </span>
-                <span id="qris-countdown-text" class="font-mono text-xs font-black text-amber-300">5s</span>
+                <span id="qris-countdown-text" class="font-mono text-[10px] font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">PENDING</span>
             </div>
-            <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden border border-emerald-500/30 p-0.5">
-                <div id="qris-progress-bar" class="bg-gradient-to-r from-emerald-500 via-teal-300 to-emerald-400 h-full rounded-full transition-all duration-1000 ease-linear shadow-md shadow-emerald-400/50" style="width: 15%"></div>
-            </div>
-            <p id="qris-detect-subtitle" class="text-[10px] text-slate-300 mt-2 flex items-center space-x-1.5 leading-snug">
-                <i class="fas fa-bolt text-amber-400 flex-shrink-0"></i>
-                <span>Sistem otomatis konfirmasi lunas & membunyikan suara saat pembayaran diterima tanpa perlu pencet tombol!</span>
+            <p id="qris-detect-subtitle" class="text-[11px] text-slate-300 mt-1.5 leading-snug">
+                Silakan scan QRIS di atas dan selesaikan pembayaran di HP Anda. Begitu pembayaran berhasil diverifikasi, <strong>suara notifikasi lunas otomatis langsung berbunyi</strong>!
             </p>
         </div>
 
@@ -78,7 +74,7 @@ $autoWa = (!$isQrisPending) && ($autoWa ?? (isset($_GET['auto_wa']) || isset($_G
             <button type="button" id="btn-manual-confirm-qris" onclick="executeQrisAutoConfirm(true)" 
                 class="w-full py-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black rounded-xl transition duration-300 shadow-xl shadow-emerald-500/40 text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shimmer-btn cursor-pointer">
                 <i class="fas fa-check-circle text-base"></i>
-                <span id="btn-qris-label">Konfirmasi Sekarang (Instan)</span>
+                <span id="btn-qris-label">Saya Sudah Scan & Bayar (Verifikasi)</span>
             </button>
             <form id="form-confirm-qris" action="/receipt/confirm-qris" method="POST" class="hidden">
                 <input type="hidden" name="order_code" value="<?= htmlspecialchars($order['order_code']) ?>">
@@ -180,7 +176,8 @@ $autoWa = (!$isQrisPending) && ($autoWa ?? (isset($_GET['auto_wa']) || isset($_G
         </div>
     </div>
 
-    <!-- Celebration Audio Sound Bar (No Print) -->
+    <!-- Celebration Audio Sound Bar (Hanya tampil jika sudah LUNAS) -->
+    <?php if ($order['status'] === 'settlement' || $order['status'] === 'completed'): ?>
     <div class="mb-6 p-4 rounded-3xl bg-gradient-to-r from-emerald-950/90 via-slate-900/90 to-emerald-950/90 border border-emerald-500/30 text-white flex flex-col sm:flex-row items-center justify-between gap-3 backdrop-blur-xl shadow-xl shadow-emerald-950/40 no-print">
         <div class="flex items-center space-x-3.5">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-amber-400 text-slate-950 flex items-center justify-center text-xl font-black shadow-lg shadow-emerald-500/30 animate-pulse">
@@ -188,10 +185,10 @@ $autoWa = (!$isQrisPending) && ($autoWa ?? (isset($_GET['auto_wa']) || isset($_G
             </div>
             <div>
                 <div class="flex items-center space-x-2">
-                    <strong class="text-sm font-black text-white">Transaksi Berhasil Dikonfirmasi!</strong>
+                    <strong class="text-sm font-black text-white">Transaksi Berhasil & Lunas Terverifikasi!</strong>
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 </div>
-                <p class="text-xs text-slate-300 mt-0.5">Lonceng notifikasi transaksi sukses telah berbunyi otomatis.</p>
+                <p class="text-xs text-slate-300 mt-0.5">Lonceng & suara konfirmasi transaksi lunas telah berbunyi otomatis.</p>
             </div>
         </div>
         <button type="button" onclick="if(window.playTransactionSuccessSound) window.playTransactionSuccessSound(true)" 
@@ -200,6 +197,7 @@ $autoWa = (!$isQrisPending) && ($autoWa ?? (isset($_GET['auto_wa']) || isset($_G
             <span>Putar Ulang Suara Transaksi 🔔</span>
         </button>
     </div>
+    <?php endif; ?>
 
     <!-- Printable Receipt Box (Sesuai Gambar 36 & 37 Skripsi) -->
     <div id="printable-receipt" class="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
@@ -626,16 +624,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const sessionKey = 'wijaya_sound_played_' + orderCode;
 
     // Jika pembayaran QRIS masih pending:
-    // Jalankan timer 5 detik otomatis konfirmasi & bunyikan suara lunas langsung tanpa pencet tombol!
+    // Pantau status pembayaran secara real-time (tanpa timer hitung mundur palsu!)
+    // Suara baru akan berbunyi otomatis ketika pembayaran benar-benar terverifikasi (oleh pelanggan setelah scan / kasir / webhook).
     if (isQrisPending) {
-        let qrisTimer = 5;
-        const countdownEl = document.getElementById('qris-countdown-text');
-        const progressEl = document.getElementById('qris-progress-bar');
-
-        // Polling background setiap 2 detik cek apakah sudah dikonfirmasi admin/sistem
+        const pageLoadTs = Math.floor(Date.now() / 1000);
         const pollInterval = setInterval(() => {
             if (isConfirmingQris) { clearInterval(pollInterval); return; }
-            fetch('/api/order/status?code=' + encodeURIComponent(orderCode))
+            fetch('/api/order/status?code=' + encodeURIComponent(orderCode) + '&ts=' + pageLoadTs)
                 .then(r => r.json())
                 .then(st => {
                     if (st.is_settlement) {
@@ -643,22 +638,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         executeQrisAutoConfirm();
                     }
                 }).catch(() => {});
-        }, 2000);
-
-        // Countdown otomatis 5 detik:
-        const qrisInterval = setInterval(() => {
-            qrisTimer--;
-            const pct = Math.min(100, Math.round(((5 - qrisTimer) / 5) * 100));
-            if (progressEl) progressEl.style.width = pct + '%';
-            if (countdownEl) countdownEl.textContent = qrisTimer + 's';
-
-            if (qrisTimer <= 0) {
-                clearInterval(qrisInterval);
-                clearInterval(pollInterval);
-                // Eksekusi lunas otomatis & bunyikan suara lunas!
-                executeQrisAutoConfirm();
-            }
-        }, 1000);
+        }, 1500);
     }
 
     // Bunyikan suara konfirmasi HANYA 1 KALI ketika pesanan sudah lunas

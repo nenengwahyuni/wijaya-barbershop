@@ -150,6 +150,9 @@ class AdminController extends Controller
 
         // Kirim Notifikasi WhatsApp Otomatis ke Pelanggan saat status berubah
         $order = Order::findWithDetails($orderId);
+        if ($newStatus === 'settlement') {
+            \App\Controllers\ApiController::recordQrisPaidSignal($order['order_code'] ?? null);
+        }
         if ($order && !empty($order['customer_phone'])) {
             $waService = new WhatsAppService();
             if ($newStatus === 'settlement') {
