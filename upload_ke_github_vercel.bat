@@ -4,36 +4,36 @@ title Upload Proyek Wijaya Barbershop ke GitHub & Vercel
 color 0B
 
 echo ======================================================================
-echo   DEPLOYMENT KE GITHUB ^& VERCEL - WIJAYA BARBERSHOP
+echo   UPLOAD OTOMATIS KE GITHUB ^& VERCEL - WIJAYA BARBERSHOP
+echo   Repository: https://github.com/nenengwahyuni/wijaya-barbershop.git
 echo ======================================================================
 echo.
-echo Proyek Anda sudah 100%% siap untuk di-hosting di Vercel (PHP Serverless + SQLite).
+echo [1/3] Menyegarkan sesi login GitHub (jika muncul jendela Sign in with Browser, silakan klik Authorize)...
+(
+echo protocol=https
+echo host=github.com
 echo.
-echo Langkah 1: Buat repository baru (Kosong) di https://github.com/new
-echo            Contoh nama repo: wijaya-barbershop
-echo.
-set "DEFAULT_URL=https://github.com/nenengwahyuni/wijaya-barbershop.git"
-set /p REPO_URL="Tekan ENTER langsung untuk push ke %DEFAULT_URL% (atau paste URL lain): "
+) | git credential-manager erase >nul 2>&1
 
-if "%REPO_URL%"=="" (
-    set "REPO_URL=%DEFAULT_URL%"
-)
-
-echo.
-echo [+] Menyiapkan Git & mengunggah kode ke GitHub...
+echo [2/3] Mengunggah seluruh kode ke GitHub (nenengwahyuni/wijaya-barbershop)...
 git branch -M main
 git remote remove origin 2>nul
-git remote add origin %REPO_URL%
+git remote add origin https://github.com/nenengwahyuni/wijaya-barbershop.git
 git add .
 git commit -m "Deploy Wijaya Barbershop Ready for Vercel" 2>nul
 git push -u origin main
 
-echo.
-echo ======================================================================
-echo   SELESAI! Selanjutnya:
-echo   1. Buka https://vercel.com/new
-echo   2. Klik "Import" pada repository GitHub "wijaya-barbershop"
-echo   3. Langsung klik "Deploy" (Semua konfigurasi sudah otomatis!)
-echo ======================================================================
-start https://vercel.com/new
+if %errorlevel% equ 0 (
+    echo.
+    echo ======================================================================
+    echo   [BERHASIL!] Kode sudah masuk ke GitHub Anda!
+    echo   Membuka halaman Vercel untuk Import ^& Deploy...
+    echo   1. Di halaman Vercel yang terbuka, klik tombol "Import" di sebelah "wijaya-barbershop"
+    echo   2. Langsung klik "Deploy"
+    echo ======================================================================
+    start https://vercel.com/new
+) else (
+    echo.
+    echo [!] Gagal mengunggah otomatis. Pastikan Anda sudah menekan tombol "Sign in with your browser" yang muncul.
+)
 pause
