@@ -134,7 +134,7 @@ class AuthController extends Controller
             $response->redirect('/admin');
         } else {
             $this->setFlash('success', "Selamat datang, {$user['fullname']}! Silakan pilih layanan pangkas rambut.");
-            $response->redirect('/services');
+            $response->redirect('/');
         }
     }
 

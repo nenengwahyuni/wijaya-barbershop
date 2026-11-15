@@ -148,8 +148,8 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/admin';
 
             <div class="grid grid-cols-2 gap-2 text-center text-xs">
                 <a href="/" class="py-2 px-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 font-semibold transition flex items-center justify-center space-x-1 border border-white/5 shadow-sm">
-                    <i class="fas fa-home text-[10px]"></i>
-                    <span>Web Utama</span>
+                    <i class="fas fa-external-link-alt text-[10px]"></i>
+                    <span>Web Tamu</span>
                 </a>
                 <a href="/logout" class="py-2 px-2 rounded-xl bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white font-semibold transition flex items-center justify-center space-x-1 border border-rose-500/30 shadow-sm">
                     <i class="fas fa-sign-out-alt text-[10px]"></i>
@@ -203,7 +203,7 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/admin';
                 </button>
 
                 <!-- Web Tamu shortcut -->
-                <a href="/" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center space-x-1.5 border border-white/10 shadow-sm btn-magnetic" title="Buka Halaman Tamu / Pelanggan">
+                <a href="/" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center space-x-1.5 border border-white/10 shadow-sm btn-magnetic" title="Buka Halaman Tamu / Pelanggan">
                     <i class="fas fa-external-link-alt text-[10px]"></i>
                     <span class="hidden md:inline">Web Tamu</span>
                 </a>

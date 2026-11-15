@@ -136,11 +136,17 @@
             });
         </script>
 
-        <div class="text-center pt-2">
+        <div class="text-center pt-2 space-y-3">
             <p class="text-sm text-slate-500">
                 Belum memiliki akun? 
                 <a href="/register" class="font-bold text-emerald-600 hover:text-emerald-500 hover:underline">Daftar Sekarang</a>
             </p>
+            <div class="pt-2 border-t border-slate-200/80">
+                <a href="/" class="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 font-bold text-xs inline-flex items-center justify-center space-x-2 transition">
+                    <i class="fas fa-home text-emerald-600"></i>
+                    <span>Buka Web Tamu / Dashboard Utama (Tanpa Login)</span>
+                </a>
+            </div>
         </div>
     </form>
 </div>
