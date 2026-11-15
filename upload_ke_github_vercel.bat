@@ -12,12 +12,11 @@ echo.
 echo Langkah 1: Buat repository baru (Kosong) di https://github.com/new
 echo            Contoh nama repo: wijaya-barbershop
 echo.
-set /p REPO_URL="Langkah 2: Paste Link URL GitHub Anda di sini (contoh: https://github.com/username/wijaya-barbershop.git): "
+set "DEFAULT_URL=https://github.com/nenengwahyuni/wijaya-barbershop.git"
+set /p REPO_URL="Tekan ENTER langsung untuk push ke %DEFAULT_URL% (atau paste URL lain): "
 
 if "%REPO_URL%"=="" (
-    echo [!] URL Repository tidak boleh kosong.
-    pause
-    exit /b
+    set "REPO_URL=%DEFAULT_URL%"
 )
 
 echo.
