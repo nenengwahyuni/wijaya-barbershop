@@ -1,40 +1,37 @@
 @echo off
 cd /d "%~dp0"
-title Upload Proyek Wijaya Barbershop ke GitHub & Vercel
+title Update Otomatis Website Vercel - Wijaya Barbershop
 color 0B
 
 echo ======================================================================
-echo   UPLOAD OTOMATIS KE GITHUB ^& VERCEL - WIJAYA BARBERSHOP
-echo   Repository: https://github.com/nenengwahyuni/wijaya-barbershop.git
+echo   UPDATE OTOMATIS KE GITHUB ^& VERCEL - WIJAYA BARBERSHOP
+echo   Live URL: https://wijaya-barbershop-app.vercel.app
 echo ======================================================================
 echo.
-echo [1/3] Menyegarkan sesi login GitHub (jika muncul jendela Sign in with Browser, silakan klik Authorize)...
-cmdkey /delete:git:https://github.com >nul 2>&1
-(
-echo protocol=https
-echo host=github.com
-echo.
-) | git credential-manager erase >nul 2>&1
-
-echo [2/3] Mengunggah seluruh kode ke GitHub (nenengwahyuni/wijaya-barbershop)...
+echo [1/2] Menyimpan perubahan terbaru...
 git branch -M main
+git add .
+git commit -m "Fix logout and add 1-click account switcher for Vercel" 2>nul
+
+echo [2/2] Mengirim update ke GitHub ^& Vercel...
 git remote remove origin 2>nul
 git remote add origin https://github.com/nenengwahyuni/wijaya-barbershop.git
-git add .
-git commit -m "Deploy Wijaya Barbershop Ready for Vercel" 2>nul
-git push -u origin main
+git push -u origin main --force
+
+git remote remove vercel_app 2>nul
+git remote add vercel_app https://github.com/nenengwahyuni/wijaya-barbershop-app.git
+git push -u vercel_app main --force
 
 if %errorlevel% equ 0 (
     echo.
     echo ======================================================================
-    echo   [BERHASIL!] Kode sudah masuk ke GitHub Anda!
-    echo   Membuka halaman Vercel untuk Import ^& Deploy...
-    echo   1. Di halaman Vercel yang terbuka, klik tombol "Import" di sebelah "wijaya-barbershop"
-    echo   2. Langsung klik "Deploy"
+    echo   [BERHASIL!] Website Vercel Anda otomatis diperbarui dalam 15 detik!
+    echo   Membuka https://wijaya-barbershop-app.vercel.app ...
     echo ======================================================================
-    start https://vercel.com/new
+    timeout /t 12 /nobreak >nul
+    start https://wijaya-barbershop-app.vercel.app
 ) else (
     echo.
-    echo [!] Gagal mengunggah otomatis. Pastikan Anda sudah menekan tombol "Sign in with your browser" yang muncul.
+    echo [!] Gagal mengunggah otomatis.
 )
 pause

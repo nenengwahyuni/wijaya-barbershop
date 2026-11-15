@@ -190,45 +190,68 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
 
                     <!-- User Auth Button -->
                     <?php if (Auth::check()): ?>
-                    <div class="relative group">
-                        <button class="flex items-center space-x-2 bg-slate-800/80 hover:bg-slate-700 px-2.5 sm:px-3.5 py-2 rounded-2xl transition text-xs sm:text-sm font-medium border border-slate-700/80 shadow-sm">
+                    <div class="relative group" id="user-dropdown-wrapper">
+                        <button type="button" onclick="const m=document.getElementById('user-dropdown-menu'); if(m) m.classList.toggle('hidden');" class="flex items-center space-x-2 bg-slate-800/80 hover:bg-slate-700 px-2.5 sm:px-3.5 py-2 rounded-2xl transition text-xs sm:text-sm font-medium border border-slate-700/80 shadow-sm cursor-pointer">
                             <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white flex items-center justify-center font-bold text-xs uppercase shadow-sm">
                                 <?= substr($currentUser['fullname'], 0, 1) ?>
                             </div>
                             <span class="max-w-[70px] sm:max-w-[100px] xl:max-w-[120px] truncate text-slate-200 font-bold whitespace-nowrap"><?= htmlspecialchars($currentUser['fullname']) ?></span>
                             <i class="fas fa-chevron-down text-[10px] text-slate-400 group-hover:rotate-180 transition duration-200"></i>
                         </button>
-                        <div class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl py-2 border border-slate-100 hidden group-hover:block transition z-50 text-slate-800 animate-fade-in">
-                            <div class="px-4 py-2.5 border-b border-slate-100">
-                                <p class="text-[11px] text-slate-400">Masuk sebagai:</p>
-                                <p class="text-sm font-bold text-slate-800 truncate"><?= htmlspecialchars($currentUser['fullname']) ?></p>
-                                <span class="inline-block mt-1 text-[10px] font-bold uppercase px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-md">
-                                    <?= htmlspecialchars($currentUser['role_name'] ?? 'Pelanggan') ?>
-                                </span>
+                        <div id="user-dropdown-menu" class="absolute right-0 top-full pt-2 w-64 hidden group-hover:block z-50 animate-fade-in">
+                            <div class="bg-white rounded-2xl shadow-2xl py-2 border border-slate-100 text-slate-800">
+                                <div class="px-4 py-2.5 border-b border-slate-100">
+                                    <p class="text-[11px] text-slate-400">Masuk sebagai:</p>
+                                    <p class="text-sm font-bold text-slate-800 truncate"><?= htmlspecialchars($currentUser['fullname']) ?></p>
+                                    <span class="inline-block mt-1 text-[10px] font-bold uppercase px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-md">
+                                        <?= htmlspecialchars($currentUser['role_name'] ?? 'Pelanggan') ?>
+                                    </span>
+                                </div>
+                                <?php if (Auth::isStaff()): ?>
+                                <a href="/admin" class="flex items-center space-x-2 px-4 py-2 text-sm text-emerald-600 hover:bg-emerald-50 font-bold transition">
+                                    <i class="fas fa-tachometer-alt text-xs w-4"></i>
+                                    <span>Dashboard Staf</span>
+                                </a>
+                                <?php endif; ?>
+                                <a href="/membership" class="flex items-center space-x-2 px-4 py-2 text-sm hover:bg-slate-50 font-bold transition text-amber-600">
+                                    <i class="fas fa-crown text-xs text-amber-500 w-4"></i>
+                                    <span>VIP Club & Poin Saya</span>
+                                </a>
+                                <a href="/promotions" class="flex items-center space-x-2 px-4 py-2 text-sm hover:bg-slate-50 font-semibold transition">
+                                    <i class="fas fa-tags text-xs text-slate-400 w-4"></i>
+                                    <span>Kupon Promo Diskon</span>
+                                </a>
+                                <a href="/my-orders" class="flex items-center space-x-2 px-4 py-2 text-sm hover:bg-slate-50 font-semibold transition">
+                                    <i class="fas fa-list-ul text-xs text-slate-400 w-4"></i>
+                                    <span>Pesanan Saya</span>
+                                </a>
+                                <div class="px-3 py-2 mt-1 border-t border-slate-100 bg-slate-50/70">
+                                    <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5 px-1">Ganti Akun Cepat (1-Klik):</p>
+                                    <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+                                        <a href="/switch-account?username=reza" class="px-2 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-emerald-500 hover:text-emerald-700 font-bold text-slate-700 flex items-center space-x-1.5 transition shadow-2xs">
+                                            <i class="fas fa-user text-emerald-500 text-[10px]"></i>
+                                            <span class="truncate">Pelanggan</span>
+                                        </a>
+                                        <a href="/switch-account?username=mely" class="px-2 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-teal-500 hover:text-teal-700 font-bold text-slate-700 flex items-center space-x-1.5 transition shadow-2xs">
+                                            <i class="fas fa-cash-register text-teal-500 text-[10px]"></i>
+                                            <span class="truncate">Kasir</span>
+                                        </a>
+                                        <a href="/switch-account?username=doni" class="px-2 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-700 font-bold text-slate-700 flex items-center space-x-1.5 transition shadow-2xs">
+                                            <i class="fas fa-scissors text-amber-500 text-[10px]"></i>
+                                            <span class="truncate">Capster</span>
+                                        </a>
+                                        <a href="/switch-account?username=agung" class="px-2 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-indigo-500 hover:text-indigo-700 font-bold text-slate-700 flex items-center space-x-1.5 transition shadow-2xs">
+                                            <i class="fas fa-user-shield text-indigo-500 text-[10px]"></i>
+                                            <span class="truncate">Admin</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <hr class="my-1 border-slate-100">
+                                <a href="/logout" class="flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 font-bold transition">
+                                    <i class="fas fa-sign-out-alt text-xs w-4"></i>
+                                    <span>Keluar / Login Akun Lain</span>
+                                </a>
                             </div>
-                            <?php if (Auth::isStaff()): ?>
-                            <a href="/admin" class="flex items-center space-x-2 px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 font-bold transition">
-                                <i class="fas fa-tachometer-alt text-xs"></i>
-                                <span>Dashboard Staf</span>
-                            </a>
-                            <?php endif; ?>
-                            <a href="/membership" class="flex items-center space-x-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-bold transition text-amber-600">
-                                <i class="fas fa-crown text-xs text-amber-500"></i>
-                                <span>VIP Club & Poin Saya</span>
-                            </a>
-                            <a href="/promotions" class="flex items-center space-x-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-semibold transition">
-                                <i class="fas fa-tags text-xs text-slate-400"></i>
-                                <span>Kupon Promo Diskon</span>
-                            </a>
-                            <a href="/my-orders" class="flex items-center space-x-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-semibold transition">
-                                <i class="fas fa-list-ul text-xs text-slate-400"></i>
-                                <span>Pesanan Saya</span>
-                            </a>
-                            <hr class="my-1 border-slate-100">
-                            <a href="/logout" class="flex items-center space-x-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 font-semibold transition">
-                                <i class="fas fa-sign-out-alt text-xs"></i>
-                                <span>Keluar (Logout)</span>
-                            </a>
                         </div>
                     </div>
                     <?php else: ?>

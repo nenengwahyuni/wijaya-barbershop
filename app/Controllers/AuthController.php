@@ -13,6 +13,10 @@ class AuthController extends Controller
 {
     public function showLogin(Request $request, Response $response)
     {
+        if ($request->input('logout') || $request->input('switch')) {
+            Auth::logout();
+        }
+
         if (Auth::check()) {
             if (Auth::isStaff()) {
                 $response->redirect('/admin');
@@ -186,8 +190,36 @@ class AuthController extends Controller
     public function logout(Request $request, Response $response)
     {
         Auth::logout();
-        $this->setFlash('success', 'Anda telah berhasil keluar (logout).');
-        $response->redirect('/login');
+        $this->setFlash('success', 'Anda telah berhasil keluar (logout). Silakan pilih akun Pelanggan, Kasir, atau Admin.');
+        $response->redirect('/login?in_app_frame=1');
+    }
+
+    public function switchAccount(Request $request, Response $response)
+    {
+        $username = trim($request->input('username', ''));
+        Auth::logout();
+
+        if (empty($username)) {
+            $this->setFlash('success', 'Silakan pilih atau ketik akun yang ingin digunakan.');
+            $response->redirect('/login?in_app_frame=1');
+        }
+
+        $user = User::findByUsernameOrEmail($username);
+        if (!$user) {
+            $this->setFlash('error', 'Akun tidak ditemukan.');
+            $response->redirect('/login?in_app_frame=1');
+        }
+
+        Auth::login($user);
+
+        if (in_array($user['role_name'] ?? '', ['admin', 'direktur', 'kasir', 'barber', 'capster'])) {
+            $roleLabel = strtoupper($user['role_name'] ?? 'STAF');
+            $this->setFlash('success', "Berhasil beralih ke akun {$roleLabel}: {$user['fullname']}!");
+            $response->redirect('/admin?in_app_frame=1');
+        } else {
+            $this->setFlash('success', "Berhasil beralih ke akun Pelanggan: {$user['fullname']}! Silakan pilih layanan.");
+            $response->redirect('/services?in_app_frame=1');
+        }
     }
 }
 

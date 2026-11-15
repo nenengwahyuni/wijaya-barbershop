@@ -64,7 +64,7 @@ if ($isIframe) {
     @setcookie('in_app_frame', '1', time() + 86400, '/');
 }
 
-if (php_sapi_name() !== 'cli' && $isGet && !$isIframe && !str_starts_with($reqPath, '/api') && !isset($_GET['raw']) && !preg_match('/\.(css|js|mp3|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$/i', $reqPath)) {
+if (php_sapi_name() !== 'cli' && $isGet && !$isIframe && !str_starts_with($reqPath, '/api') && !str_starts_with($reqPath, '/logout') && !str_starts_with($reqPath, '/switch-account') && !isset($_GET['raw']) && !preg_match('/\.(css|js|mp3|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$/i', $reqPath)) {
     $queryString = $_SERVER['QUERY_STRING'] ?? '';
     $separator = empty($queryString) ? '?' : '&';
     $rawUri = $_SERVER['REQUEST_URI'] ?? '/';

@@ -239,6 +239,29 @@ class Database
 
     private static function replayServerlessOrders(PDO $pdo): void
     {
+        try {
+            if (!empty($_SESSION['user']) && is_array($_SESSION['user']) && !empty($_SESSION['user']['id']) && !empty($_SESSION['user']['username'])) {
+                $u = $_SESSION['user'];
+                $chkUser = $pdo->prepare("SELECT id FROM users WHERE id = ? OR username = ? LIMIT 1");
+                $chkUser->execute([$u['id'], $u['username']]);
+                if (!$chkUser->fetch()) {
+                    $insUser = $pdo->prepare("INSERT OR IGNORE INTO users (id, username, password, fullname, email, phone, on_duty, role_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                    $insUser->execute([
+                        $u['id'],
+                        $u['username'],
+                        password_hash('password123', PASSWORD_BCRYPT),
+                        $u['fullname'] ?? $u['username'],
+                        $u['email'] ?? ($u['username'] . '@wijayabarber.com'),
+                        $u['phone'] ?? '081200000000',
+                        $u['on_duty'] ?? 0,
+                        $u['role_id'] ?? 4
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Abaikan
+        }
+
         if (empty($_SESSION['serverless_orders']) || !is_array($_SESSION['serverless_orders'])) {
             return;
         }

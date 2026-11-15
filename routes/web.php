@@ -24,6 +24,7 @@ $router->post('/login', [AuthController::class, 'login']);
 $router->get('/register', [AuthController::class, 'showRegister']);
 $router->post('/register', [AuthController::class, 'register']);
 $router->get('/logout', [AuthController::class, 'logout']);
+$router->get('/switch-account', [AuthController::class, 'switchAccount']);
 
 // Cart & Booking Checkout Routes (Gambar 30, 36, 37)
 $router->get('/cart', [BookingController::class, 'cart']);
