@@ -176,29 +176,6 @@ $autoWa = (!$isQrisPending) && ($autoWa ?? (isset($_GET['auto_wa']) || isset($_G
         </div>
     </div>
 
-    <!-- Celebration Audio Sound Bar (Hanya tampil jika sudah LUNAS) -->
-    <?php if ($order['status'] === 'settlement' || $order['status'] === 'completed'): ?>
-    <div class="mb-6 p-4 rounded-3xl bg-gradient-to-r from-emerald-950/90 via-slate-900/90 to-emerald-950/90 border border-emerald-500/30 text-white flex flex-col sm:flex-row items-center justify-between gap-3 backdrop-blur-xl shadow-xl shadow-emerald-950/40 no-print">
-        <div class="flex items-center space-x-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-amber-400 text-slate-950 flex items-center justify-center text-xl font-black shadow-lg shadow-emerald-500/30 animate-pulse">
-                <i class="fas fa-bell"></i>
-            </div>
-            <div>
-                <div class="flex items-center space-x-2">
-                    <strong class="text-sm font-black text-white">Transaksi Berhasil & Lunas Terverifikasi!</strong>
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                </div>
-                <p class="text-xs text-slate-300 mt-0.5">Lonceng & suara konfirmasi transaksi lunas telah berbunyi otomatis.</p>
-            </div>
-        </div>
-        <button type="button" onclick="if(window.playTransactionSuccessSound) window.playTransactionSuccessSound(true)" 
-            class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs transition flex items-center space-x-2 shadow-lg shadow-emerald-500/30 btn-magnetic flex-shrink-0">
-            <i class="fas fa-volume-up text-sm"></i>
-            <span>Putar Ulang Suara Transaksi 🔔</span>
-        </button>
-    </div>
-    <?php endif; ?>
-
     <!-- Printable Receipt Box (Sesuai Gambar 36 & 37 Skripsi) -->
     <div id="printable-receipt" class="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
         <!-- Receipt Header -->
