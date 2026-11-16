@@ -12,28 +12,6 @@
     <div id="hero-bg-overlay" class="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-950/40 to-slate-950/10 transition-all duration-500 z-0"></div>
     <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/30 z-0"></div>
 
-    <!-- Location Badge & Interactive Hero Background Controls -->
-    <div class="absolute bottom-5 left-4 sm:left-8 z-20 flex flex-wrap items-center gap-2">
-        <div class="flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-950/85 backdrop-blur-md border border-slate-700/80 text-xs text-slate-200 shadow-lg">
-            <i class="fas fa-store text-emerald-400"></i>
-            <span class="font-bold">Wijaya Barbershop &bull; Kota Metro</span>
-        </div>
-        
-        <!-- Toggle Terangkan / Kontras Background -->
-        <button type="button" onclick="toggleHeroBgBrightness()" class="px-3 py-1.5 rounded-full bg-emerald-600/90 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg transition flex items-center space-x-1.5 backdrop-blur-md">
-            <i class="fas fa-sun text-amber-300"></i>
-            <span id="btn-brightness-text">Terangkan Background (100%)</span>
-        </button>
-
-        <!-- Pilihan Tema Gambar Barbershop -->
-        <div class="hidden md:flex items-center space-x-1.5 bg-slate-950/80 backdrop-blur-md px-2 py-1 rounded-full border border-slate-700/80 text-[11px]">
-            <span class="text-slate-400 px-1 font-semibold">Ganti Suasana:</span>
-            <button type="button" onclick="changeHeroBg('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1920&q=80')" class="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-emerald-600 text-white transition font-medium">Studio 1</button>
-            <button type="button" onclick="changeHeroBg('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1920&q=80')" class="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-emerald-600 text-white transition font-medium">Studio 2</button>
-            <button type="button" onclick="changeHeroBg('https://images.unsplash.com/photo-1512690459411-b9245aed614b?auto=format&fit=crop&w=1920&q=80')" class="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-emerald-600 text-white transition font-medium">Classic</button>
-        </div>
-    </div>
-
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
