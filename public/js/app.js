@@ -620,10 +620,29 @@ function initLiveSonarQueue() {
 let barberAudioCtx = null;
 
 function getBarberAudioContext() {
+    try {
+        if (window.top && window.top !== window && window.top.location.origin === window.location.origin) {
+            if (!window.top.__wijayaSharedAudioCtx) {
+                const TopAudioContext = window.top.AudioContext || window.top.webkitAudioContext;
+                if (TopAudioContext) {
+                    window.top.__wijayaSharedAudioCtx = new TopAudioContext();
+                }
+            }
+            if (window.top.__wijayaSharedAudioCtx) {
+                barberAudioCtx = window.top.__wijayaSharedAudioCtx;
+                if (barberAudioCtx.state === 'suspended') {
+                    barberAudioCtx.resume();
+                }
+                return barberAudioCtx;
+            }
+        }
+    } catch (e) {}
+
     if (!barberAudioCtx) {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (AudioContextClass) {
             barberAudioCtx = new AudioContextClass();
+            try { window.__wijayaSharedAudioCtx = barberAudioCtx; } catch (e) {}
         }
     }
     if (barberAudioCtx && barberAudioCtx.state === 'suspended') {
@@ -632,29 +651,43 @@ function getBarberAudioContext() {
     return barberAudioCtx;
 }
 
-// 1. Suara Klik Umum untuk SEMUA Tombol & Link (Subtle Modern Tactile Click)
+// 1. Suara Ketukan (Tactile Knock / Tap Sound) untuk SEMUA Fitur, Tombol, Menu & Link
 function playGeneralClickSound() {
     try {
         const ctx = getBarberAudioContext();
         if (!ctx) return;
 
         const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
 
-        // Mechanical glass tactile click
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(980, now);
-        osc.frequency.exponentialRampToValueAtTime(320, now + 0.028);
+        // Layer 1: Ketukan Utama (Warm Wood/Glass Tactile Knock "Tok")
+        const knockOsc = ctx.createOscillator();
+        const knockGain = ctx.createGain();
+        knockOsc.type = 'triangle';
+        knockOsc.frequency.setValueAtTime(520, now);
+        knockOsc.frequency.exponentialRampToValueAtTime(145, now + 0.055);
 
-        gain.gain.setValueAtTime(0.14, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.028);
+        knockGain.gain.setValueAtTime(0.45, now);
+        knockGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
 
-        osc.connect(gain);
-        gain.connect(ctx.destination);
+        knockOsc.connect(knockGain);
+        knockGain.connect(ctx.destination);
+        knockOsc.start(now);
+        knockOsc.stop(now + 0.065);
 
-        osc.start(now);
-        osc.stop(now + 0.035);
+        // Layer 2: Crisp Attack Tap Transient (Sentuhan Ketukan Jernih)
+        const tapOsc = ctx.createOscillator();
+        const tapGain = ctx.createGain();
+        tapOsc.type = 'sine';
+        tapOsc.frequency.setValueAtTime(1480, now);
+        tapOsc.frequency.exponentialRampToValueAtTime(340, now + 0.025);
+
+        tapGain.gain.setValueAtTime(0.32, now);
+        tapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.028);
+
+        tapOsc.connect(tapGain);
+        tapGain.connect(ctx.destination);
+        tapOsc.start(now);
+        tapOsc.stop(now + 0.032);
     } catch (e) {
         console.warn('Audio play error:', e);
     }
@@ -1045,34 +1078,36 @@ function initSoundFXBindings() {
     window.playTransactionSuccessSound = playTransactionSuccessSound;
     window.toggleAudioPreview = toggleAudioPreview;
 
-    // A. GLOBAL CLICK LISTENER: Berbunyi di SEMUA tombol, link, dan elemen interaktif
-    document.addEventListener('click', (e) => {
+    // A. GLOBAL CLICK & POINTERDOWN LISTENER: Suara ketukan di SEMUA fitur, menu, tombol, tab, dan link
+    const handleInteractiveKnock = (e) => {
         const clickable = e.target.closest(
             'button, ' +
             'a, ' +
-            'input[type="submit"], ' +
-            'input[type="button"], ' +
-            'input[type="checkbox"], ' +
-            'input[type="radio"], ' +
+            'input, ' +
             'select, ' +
+            'textarea, ' +
+            'summary, ' +
             '[role="button"], ' +
+            '[onclick], ' +
             '.cursor-pointer, ' +
             '.btn-magnetic, ' +
             '.card-premium, ' +
+            '.period-tab-btn, ' +
+            '.chatbot-qr-btn, ' +
             'label'
         );
 
         if (!clickable) return;
 
-        // Cegah double audio jika label memicu input dalam 25ms
+        // Cegah double audio antara pointerdown dan click dalam 140ms
         const nowTime = performance.now();
-        if (nowTime - lastClickAudioTime < 25) return;
+        if (nowTime - lastClickAudioTime < 140) return;
         lastClickAudioTime = nowTime;
 
         // Buka / aktifkan AudioContext browser pada user gesture
         getBarberAudioContext();
 
-        // 1. KATEGORI 1: KLIK KERANJANG PEMESANAN (Suara Khusus Keranjang)
+        // 1. KATEGORI 1: KLIK KERANJANG PEMESANAN (Suara Ketukan + Keranjang)
         const isCartAction = clickable.closest(
             'a[href*="/cart"], ' +
             'form[action*="/cart"] button, ' +
@@ -1098,11 +1133,12 @@ function initSoundFXBindings() {
         );
 
         if (isCartAction) {
+            playGeneralClickSound();
             playCartSound();
             return;
         }
 
-        // 2. KATEGORI 2: KLIK PEMESANAN / CHECKOUT / BOOKING (Suara Gunting Barbershop)
+        // 2. KATEGORI 2: KLIK PEMESANAN / CHECKOUT / BOOKING (Suara Ketukan + Gunting Barbershop)
         const isOrderAction = clickable.closest(
             'a[href*="/checkout"], ' +
             'a[href*="/home-service"], ' +
@@ -1123,13 +1159,17 @@ function initSoundFXBindings() {
         );
 
         if (isOrderAction) {
+            playGeneralClickSound();
             playOrderSound();
             return;
         }
 
-        // 3. KATEGORI 3: SEMUA KLIK LAINNYA DI WEBSITE (Suara Klik Modern Tactile)
+        // 3. KATEGORI 3: SEMUA FITUR & TOMBOL LAINNYA DI WEBSITE (Suara Ketukan Jernih)
         playGeneralClickSound();
-    }, true);
+    };
+
+    document.addEventListener('pointerdown', handleInteractiveKnock, true);
+    document.addEventListener('click', handleInteractiveKnock, true);
 
     // B. Pemicu Suara Transaksi Sukses: HANYA saat ada parameter payment_status=success dan belum pernah berbunyi
     const isPaymentSuccessParam = window.location.search.includes('payment_status=success');
