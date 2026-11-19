@@ -249,26 +249,28 @@ foreach ($revenueChart as $rc) {
         <svg id="dynamic-revenue-svg" viewBox="0 0 860 250" class="w-full h-full overflow-visible" preserveAspectRatio="none"></svg>
     </div>
 
-    <!-- TABEL SIAPA SAJA YANG ORDER PADA PERIODE INI -->
-    <div class="rounded-2xl border border-white/10 overflow-hidden bg-slate-950/60">
-        <div class="px-4 py-3 bg-slate-900/90 border-b border-white/10 flex items-center justify-between">
+    <!-- TABEL SIAPA SAJA YANG ORDER PADA PERIODE INI (RAPI & PROPORSIONAL) -->
+    <div class="rounded-2xl border border-white/10 overflow-hidden bg-slate-950/60 shadow-inner">
+        <div class="px-5 py-3.5 bg-slate-900/90 border-b border-white/10 flex items-center justify-between">
             <h3 class="text-xs sm:text-sm font-black text-white flex items-center space-x-2">
                 <i class="fas fa-users text-emerald-400"></i>
-                <span id="an-orders-table-title">Daftar Siapa Saja yang Order (7 Hari Terakhir)</span>
+                <span id="an-orders-table-title">Daftar Pelanggan yang Order (7 Hari Terakhir)</span>
             </h3>
-            <span id="an-orders-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <span id="an-orders-badge" class="px-3 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                 <?= $totalWeekOrders ?> Pelanggan
             </span>
         </div>
         <div class="overflow-x-auto max-h-80 overflow-y-auto">
-            <table class="w-full text-left text-xs">
-                <thead class="bg-slate-950/90 text-slate-400 font-bold border-b border-white/10 uppercase">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-950 text-slate-400 font-extrabold border-b border-white/10 uppercase tracking-wider text-[11px]">
                     <tr>
-                        <th class="p-3.5 pl-4">Kode & Waktu Order</th>
-                        <th class="p-3.5">Nama Pelanggan (Siapa yang Order)</th>
-                        <th class="p-3.5">Layanan yang Dipesan</th>
-                        <th class="p-3.5 text-center">Metode Bayar</th>
-                        <th class="p-3.5 pr-4 text-right">Nominal Bayar</th>
+                        <th class="py-3.5 pl-5 pr-2 w-10 text-center whitespace-nowrap">No</th>
+                        <th class="py-3.5 px-3 whitespace-nowrap">Kode & Waktu</th>
+                        <th class="py-3.5 px-3 whitespace-nowrap">Pelanggan</th>
+                        <th class="py-3.5 px-3">Layanan Dipesan</th>
+                        <th class="py-3.5 px-3 text-center whitespace-nowrap">Tipe</th>
+                        <th class="py-3.5 px-3 text-center whitespace-nowrap">Metode</th>
+                        <th class="py-3.5 pl-3 pr-5 text-right whitespace-nowrap">Total Bayar</th>
                     </tr>
                 </thead>
                 <tbody id="an-orders-tbody" class="divide-y divide-white/5 text-slate-200"></tbody>
@@ -442,30 +444,46 @@ function updateAnalyticsOrdersAndKpi(filteredOrders, periodTitle, chartSeries) {
     const tbody = document.getElementById('an-orders-tbody');
     if (tbody) {
         if (filteredOrders.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">Belum ada pesanan pada periode ${periodTitle}.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Belum ada pesanan pada periode ${periodTitle}.</td></tr>`;
         } else {
-            tbody.innerHTML = filteredOrders.map(o => `
-                <tr class="hover:bg-white/5 transition">
-                    <td class="p-3.5 pl-4 font-mono text-[11px] text-slate-300">
-                        <a href="/admin/orders/${o.id}" class="text-emerald-400 font-bold hover:underline block">#${o.order_code}</a>
-                        <span>${o.formatted_dt}</span>
+            tbody.innerHTML = filteredOrders.map((o, idx) => {
+                const initial = (o.customer_name || 'P').trim().charAt(0).toUpperCase();
+                const itemsArr = (o.items_text || '').split(',').map(s => s.trim()).filter(Boolean);
+                const itemsPills = itemsArr.map(it => `<span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10 text-slate-200 text-[11px] font-semibold"><i class="fas fa-cut text-emerald-400 text-[9px] mr-1.5"></i>${it}</span>`).join(' ');
+                const typeBadge = o.service_type === 'home_service'
+                    ? '<span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-extrabold whitespace-nowrap"><i class="fas fa-motorcycle mr-1"></i>Home Service</span>'
+                    : '<span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-store mr-1"></i>Studio</span>';
+
+                return `
+                <tr class="hover:bg-white/5 transition align-middle">
+                    <td class="py-3.5 pl-5 pr-2 text-center font-mono text-slate-400 font-bold">${idx + 1}</td>
+                    <td class="py-3.5 px-3 whitespace-nowrap">
+                        <a href="/admin/orders/${o.id}" class="text-emerald-400 font-mono font-extrabold hover:underline block text-xs">#${o.order_code}</a>
+                        <span class="text-[11px] text-slate-400 font-mono block mt-0.5">${o.formatted_dt}</span>
                     </td>
-                    <td class="p-3.5">
-                        <strong class="text-white font-bold block text-xs">${o.customer_name}</strong>
-                        <span class="text-[11px] text-slate-400 font-mono"><i class="fab fa-whatsapp text-emerald-400 mr-1"></i>${o.customer_phone}</span>
+                    <td class="py-3.5 px-3 whitespace-nowrap">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white font-black text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
+                                ${initial}
+                            </div>
+                            <div>
+                                <strong class="text-white font-extrabold block text-xs leading-tight">${o.customer_name}</strong>
+                                <span class="text-[11px] text-slate-400 font-mono inline-flex items-center mt-0.5"><i class="fab fa-whatsapp text-emerald-400 mr-1"></i>${o.customer_phone}</span>
+                            </div>
+                        </div>
                     </td>
-                    <td class="p-3.5 text-slate-200">
-                        <span>${o.items_text}</span>
-                        ${o.service_type === 'home_service' ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">Home Service</span>' : '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-white/5 text-slate-400 text-[10px]">Studio</span>'}
+                    <td class="py-3.5 px-3">
+                        <div class="flex flex-wrap gap-1.5">${itemsPills}</div>
                     </td>
-                    <td class="p-3.5 text-center">
-                        <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold text-[10px]">${o.payment_method}</span>
+                    <td class="py-3.5 px-3 text-center whitespace-nowrap">${typeBadge}</td>
+                    <td class="py-3.5 px-3 text-center whitespace-nowrap">
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-extrabold text-[10px] uppercase tracking-wider">${o.payment_method}</span>
                     </td>
-                    <td class="p-3.5 pr-4 text-right font-mono font-black text-emerald-400 text-sm">
+                    <td class="py-3.5 pl-3 pr-5 text-right font-mono font-black text-emerald-400 text-sm whitespace-nowrap">
                         ${fmtRpFullJs(o.grand_total)}
                     </td>
-                </tr>
-            `).join('');
+                </tr>`;
+            }).join('');
         }
     }
 
