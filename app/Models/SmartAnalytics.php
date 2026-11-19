@@ -409,8 +409,66 @@ class SmartAnalytics
         $chartYearCur = array_values(array_filter($monthlyRecap, fn($m) => $m['year'] === $curYear));
         $chartYearPrev = array_values(array_filter($monthlyRecap, fn($m) => $m['year'] === $prevYear));
 
+        // ── 4. DAFTAR LENGKAP SIAPA SAJA YANG ORDER (BESERTA ITEM LAYANAN) ──
+        $rawOrders = self::fetchAll(
+            "SELECT o.id, o.order_code,
+                    COALESCE(NULLIF(o.customer_name, ''), u.fullname, 'Pelanggan') as customer_name,
+                    COALESCE(NULLIF(o.customer_phone, ''), u.phone, '-') as customer_phone,
+                    o.service_type, o.payment_method, o.grand_total, o.status, o.created_at
+             FROM orders o
+             LEFT JOIN users u ON o.user_id = u.id
+             WHERE o.status IN ('settlement','completed') AND o.deleted_at IS NULL
+             ORDER BY o.created_at DESC"
+        );
+
+        $itemRows = self::fetchAll(
+            "SELECT oi.order_id, i.item_name, oi.quantity
+             FROM order_items oi
+             JOIN items i ON i.id = oi.item_id"
+        );
+        $orderItemsMap = [];
+        foreach ($itemRows as $ir) {
+            $oid = (int)$ir['order_id'];
+            $qty = (int)($ir['quantity'] ?? 1);
+            $orderItemsMap[$oid][] = $ir['item_name'] . ($qty > 1 ? " (x{$qty})" : '');
+        }
+
+        $ordersList = [];
+        foreach ($rawOrders as $ro) {
+            $oid = (int)$ro['id'];
+            $ts = strtotime($ro['created_at']);
+            $mNum = (int)date('n', $ts);
+            $ordersList[] = [
+                'id'             => $oid,
+                'order_code'     => $ro['order_code'],
+                'customer_name'  => $ro['customer_name'],
+                'customer_phone' => $ro['customer_phone'],
+                'items_text'     => !empty($orderItemsMap[$oid]) ? implode(', ', $orderItemsMap[$oid]) : 'Layanan Pangkas Rambut',
+                'service_type'   => $ro['service_type'] ?: 'barbershop',
+                'payment_method' => strtoupper($ro['payment_method'] ?: 'QRIS'),
+                'grand_total'    => (float)$ro['grand_total'],
+                'status'         => $ro['status'],
+                'created_at'     => $ro['created_at'],
+                'date_ymd'       => substr($ro['created_at'], 0, 10),
+                'ym'             => substr($ro['created_at'], 0, 7),
+                'year'           => (int)substr($ro['created_at'], 0, 4),
+                'month'          => $mNum,
+                'formatted_dt'   => date('d', $ts) . ' ' . ($bulanSingkat[$mNum] ?? '') . ' ' . date('Y, H:i', $ts) . ' WIB',
+            ];
+        }
+
         return [
+            'today_ymd'     => $todayYmd,
+            'last_7d_start' => date('Y-m-d', strtotime('-6 days', $now)),
+            'prev_7d_start' => date('Y-m-d', strtotime('-13 days', $now)),
+            'prev_7d_end'   => date('Y-m-d', strtotime('-7 days', $now)),
+            'this_ym'       => date('Y-m', $now),
+            'last_ym'       => date('Y-m', $lastMonthTs),
+            'two_ago_ym'    => date('Y-m', $twoMonthsAgoTs),
+            'cur_year'      => $curYear,
+            'prev_year'     => $prevYear,
             'periods'       => $periods,
+            'orders_list'   => $ordersList,
             'monthly_recap' => array_reverse($monthlyRecap), // Terbaru di atas untuk tabel
             'charts'        => [
                 '7d'            => [

@@ -72,7 +72,7 @@ class Database
         $isVercel = (bool) (getenv('VERCEL') || getenv('VERCEL_ENV'));
 
         if ($isVercel || !is_writable($sqliteDir) || (file_exists($bundledSqliteFile) && !is_writable($bundledSqliteFile))) {
-            $sqliteFile = rtrim(sys_get_temp_dir(), '/\\') . '/wijaya_barbershop_v3.sqlite';
+            $sqliteFile = rtrim(sys_get_temp_dir(), '/\\') . '/wijaya_barbershop_v4.sqlite';
             if ((!file_exists($sqliteFile) || filesize($sqliteFile) === 0) && file_exists($bundledSqliteFile) && filesize($bundledSqliteFile) > 0) {
                 @copy($bundledSqliteFile, $sqliteFile);
                 @chmod($sqliteFile, 0666);

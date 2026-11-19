@@ -6,8 +6,6 @@
 
 // Helper format rupiah
 function fmtRp(float $v): string {
-    if ($v >= 1_000_000) return 'Rp ' . number_format($v / 1_000_000, 1) . 'Jt';
-    if ($v >= 1_000) return 'Rp ' . number_format($v / 1_000, 0) . 'Rb';
     return 'Rp ' . number_format($v, 0, ',', '.');
 }
 
@@ -140,70 +138,16 @@ $trendIcon  = ($revenueTrend['trend'] ?? 'up') === 'up' ? 'fa-arrow-trend-up' : 
     </div>
 </div>
 
-<!-- ═══════════════════════════ REKAPITULASI PENGHASILAN MULTI-PERIODE (KARTU RINGKASAN LENGKAP) ═══════════════════════════ -->
+<!-- ═══════════════════════════ REKAP PENGHASILAN SIMPEL (HARI INI & 7 HARI + ATUR BULAN + SIAPA SAJA YANG ORDER) ═══════════════════════════ -->
 <?php
 $recap = $revenue_recap ?? [];
 $recapPeriods = $recap['periods'] ?? [];
-$recapMonthly = $recap['monthly_recap'] ?? [];
 $recapCharts  = $recap['charts'] ?? [];
+$recapOrders  = $recap['orders_list'] ?? [];
 
-$featuredPeriodKeys = [
-    'today',
-    'last_7_days',
-    'prev_7_days',
-    'this_month',
-    'last_month',
-    'last_2_months',
-    'this_year',
-    'last_year'
-];
-?>
-<div class="bg-slate-800/70 backdrop-blur-md border border-white/10 rounded-3xl p-5 sm:p-6 mb-6 shadow-xl">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-5 border-b border-white/10 gap-3">
-        <div>
-            <div class="flex items-center space-x-2.5">
-                <span class="w-2.5 h-6 rounded-full bg-gradient-to-b from-emerald-400 to-teal-500"></span>
-                <h2 class="text-base sm:text-lg font-black text-white">💰 Rekapitulasi Penghasilan Multi-Periode</h2>
-            </div>
-            <p class="text-xs text-slate-400 mt-1">Ringkasan penghasilan lunas dari Hari Ini, 7 Hari Lalu, Bulan Kemarin, 2 Bulan Terakhir, hingga Tahunan</p>
-        </div>
-        <div class="flex items-center space-x-2">
-            <span class="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-extrabold">
-                Grand Total Semua Waktu: Rp <?= number_format($recapPeriods['all_time']['revenue'] ?? 0, 0, ',', '.') ?> (<?= $recapPeriods['all_time']['orders_count'] ?? 0 ?> Order)
-            </span>
-        </div>
-    </div>
+$pToday = $recapPeriods['today'] ?? ['revenue' => 0, 'orders_count' => 0, 'sublabel' => date('d M Y')];
+$p7d    = $recapPeriods['last_7_days'] ?? ['revenue' => 0, 'orders_count' => 0, 'sublabel' => ''];
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <?php foreach ($featuredPeriodKeys as $pk): ?>
-        <?php if (empty($recapPeriods[$pk])) continue; $p = $recapPeriods[$pk]; ?>
-        <div class="p-4 rounded-2xl bg-slate-900/75 border border-white/10 hover:border-emerald-500/40 transition flex flex-col justify-between group">
-            <div>
-                <div class="flex items-center justify-between gap-2 mb-2">
-                    <span class="text-[11px] font-extrabold text-emerald-400 uppercase tracking-wider truncate"><?= htmlspecialchars($p['label']) ?></span>
-                    <div class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-emerald-400 flex-shrink-0 group-hover:bg-emerald-500 group-hover:text-slate-950 transition">
-                        <i class="fas <?= htmlspecialchars($p['icon'] ?? 'fa-wallet') ?> text-xs"></i>
-                    </div>
-                </div>
-                <p class="text-xl sm:text-2xl font-black text-white font-mono tracking-tight">
-                    Rp <?= number_format($p['revenue'], 0, ',', '.') ?>
-                </p>
-                <p class="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
-                    <span><i class="fas fa-calendar-alt mr-1 text-slate-500"></i><?= htmlspecialchars($p['sublabel']) ?></span>
-                    <span class="font-bold text-amber-300"><?= $p['orders_count'] ?> Order</span>
-                </p>
-            </div>
-            <div class="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400">
-                <span>Studio: <strong class="text-slate-200"><?= $p['studio_orders'] ?></strong> · Home: <strong class="text-amber-300"><?= $p['home_orders'] ?></strong></span>
-                <span class="text-emerald-400 font-bold">QRIS: <?= $p['qris_orders'] ?> | Tunai: <?= $p['tunai_orders'] ?></span>
-            </div>
-        </div>
-        <?php endforeach; ?>
-    </div>
-</div>
-
-<!-- ═══════════════════════════ REVENUE CHART MULTI-PERIODE (DIAGRAM BATANG & GARIS TREN) ═══════════════════════════ -->
-<?php
 $totalWeekRev = array_sum(array_column($revenueChart, 'revenue'));
 $totalWeekOrders = array_sum(array_column($revenueChart, 'orders_count'));
 $avgDailyRev = count($revenueChart) > 0 ? $totalWeekRev / count($revenueChart) : 0;
@@ -214,211 +158,144 @@ foreach ($revenueChart as $rc) {
     }
 }
 ?>
-<div class="bg-slate-800/70 backdrop-blur-md border border-white/10 rounded-3xl p-5 sm:p-6 mb-6 shadow-xl relative overflow-hidden">
-    <!-- Header & Toggle Bar Chart / Line Chart -->
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between pb-4 mb-4 border-b border-white/10 gap-3">
+<div class="bg-slate-800/75 backdrop-blur-md border border-white/10 rounded-3xl p-5 sm:p-6 mb-6 shadow-xl relative overflow-hidden">
+    <!-- Header Utama: Hanya Hari Ini, 7 Hari, & Tombol Atur Bulan -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between pb-4 mb-5 border-b border-white/10 gap-3">
         <div>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2.5">
                 <span class="w-2.5 h-6 rounded-full bg-emerald-500"></span>
-                <h2 class="text-base sm:text-lg font-black text-white flex items-center space-x-2">
-                    <span id="dynamic-chart-title">📊 Grafik Rekap Pendapatan: 7 Hari Terakhir</span>
+                <h2 id="dynamic-chart-title" class="text-base sm:text-lg font-black text-white">
+                    📊 Rekap Penghasilan & Pelanggan Order (7 Hari Terakhir)
                 </h2>
             </div>
-            <p id="dynamic-chart-subtitle" class="text-xs text-slate-400 mt-1">Pilih tab periode di bawah untuk melihat grafik 7 Hari Lalu, Bulan Kemarin, 2 Bulan Terakhir, hingga Tahunan</p>
+            <p id="dynamic-chart-subtitle" class="text-xs text-slate-400 mt-1">
+                Tampilan simpel: Lihat rekap <strong>Hari Ini</strong> atau <strong>7 Hari Terakhir</strong>, atau klik <strong>Atur Bulan</strong> untuk cek bulan lalu.
+            </p>
         </div>
 
-        <!-- Mode Tampilan Switcher (Diagram Batang, Garis Tren, Kombinasi) -->
-        <div class="inline-flex p-1 bg-slate-900/80 rounded-2xl border border-white/10 text-xs self-start lg:self-auto shadow-inner">
-            <button type="button" id="btn-chart-bars" onclick="setAnalyticsChartMode('bars')" 
-                class="px-3.5 py-1.5 rounded-xl font-extrabold transition duration-200 bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30 flex items-center space-x-1.5">
-                <i class="fas fa-chart-column text-xs"></i>
-                <span>Diagram Batang</span>
+        <!-- 3 Tombol Utama Simpel -->
+        <div class="flex flex-wrap items-center gap-2">
+            <button type="button" id="an-btn-today" onclick="selectAnalyticsPeriod('today')"
+                class="px-3.5 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer bg-slate-900 text-slate-200 hover:bg-slate-700 border border-white/10">
+                Hari Ini (Rp <?= number_format($pToday['revenue'], 0, ',', '.') ?>)
             </button>
-            <button type="button" id="btn-chart-lines" onclick="setAnalyticsChartMode('lines')" 
-                class="px-3.5 py-1.5 rounded-xl font-bold transition duration-200 text-slate-300 hover:text-white hover:bg-slate-800 flex items-center space-x-1.5">
-                <i class="fas fa-chart-line text-xs"></i>
-                <span>Garis Tren</span>
+            <button type="button" id="an-btn-7d" onclick="selectAnalyticsPeriod('7d')"
+                class="px-3.5 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/25">
+                7 Hari Terakhir (Rp <?= number_format($p7d['revenue'], 0, ',', '.') ?>)
             </button>
-            <button type="button" id="btn-chart-combo" onclick="setAnalyticsChartMode('combo')" 
-                class="px-3.5 py-1.5 rounded-xl font-bold transition duration-200 text-slate-300 hover:text-white hover:bg-slate-800 flex items-center space-x-1.5">
-                <i class="fas fa-layer-group text-xs"></i>
-                <span>Kombinasi</span>
+            <button type="button" onclick="document.getElementById('an-custom-filter-box').classList.toggle('hidden')"
+                class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition flex items-center space-x-1.5 cursor-pointer">
+                <i class="fas fa-sliders-h text-xs"></i>
+                <span>Atur Bulan / Periode Lain</span>
             </button>
         </div>
     </div>
 
-    <!-- Filter Periode Grafik (9 Pilihan Periode) -->
-    <div class="flex flex-wrap gap-1.5 mb-5 pb-3 border-b border-white/5">
-        <?php
-        $periodTabs = [
-            '7d'            => '7 Hari Terakhir',
-            'prev7d'        => '7 Hari Lalu (Minggu Kemarin)',
-            '14d'           => '14 Hari Terakhir',
-            'this_month'    => 'Bulan Ini',
-            'last_month'    => 'Bulan Lalu / Kemarin',
-            'last_2_months' => '2 Bulan Terakhir',
-            'last_6_months' => '6 Bulan Terakhir',
-            'this_year'     => 'Tahun Ini (' . date('Y') . ')',
-            'last_year'     => 'Tahun Lalu (' . ((int)date('Y') - 1) . ')',
-        ];
-        foreach ($periodTabs as $pKey => $pLabel):
-        ?>
-        <button type="button" id="tab-period-<?= $pKey ?>" onclick="switchRevenueChartPeriod('<?= $pKey ?>')"
-            class="period-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer <?= $pKey === '7d' ? 'bg-emerald-500 text-slate-950 font-extrabold shadow-md shadow-emerald-500/25' : 'bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-700 border border-white/10' ?>">
-            <?= htmlspecialchars($pLabel) ?>
-        </button>
-        <?php endforeach; ?>
+    <!-- Kotak Pengaturan Bulan / Periode (Muncul Hanya Saat Dipencet "Atur") -->
+    <div id="an-custom-filter-box" class="hidden mb-5 p-4 rounded-2xl bg-slate-950/90 border border-amber-500/35 space-y-3">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-xs font-bold text-slate-300 mr-1">Pilih Cepat:</span>
+                <button type="button" onclick="selectAnalyticsPeriod('prev7d')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-white text-xs font-semibold transition cursor-pointer">7 Hari Lalu (Minggu Kemarin)</button>
+                <button type="button" onclick="selectAnalyticsPeriod('this_month')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-white text-xs font-semibold transition cursor-pointer">Bulan Ini</button>
+                <button type="button" onclick="selectAnalyticsPeriod('last_month')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-white text-xs font-semibold transition cursor-pointer">Bulan Lalu / Kemarin</button>
+                <button type="button" onclick="selectAnalyticsPeriod('last_2_months')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-white text-xs font-semibold transition cursor-pointer">2 Bulan Terakhir</button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-white/10">
+                <span class="text-xs font-bold text-amber-300">Pilih Bulan & Tahun:</span>
+                <select id="an-select-month" class="bg-slate-800 text-white text-xs rounded-lg px-2.5 py-1.5 border border-white/15 outline-none">
+                    <option value="all">-- Semua Bulan (1 Tahun) --</option>
+                    <?php
+                    $mList = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
+                    $prevMNum = (int)date('n') - 1; if ($prevMNum < 1) $prevMNum = 12;
+                    foreach ($mList as $mIdx => $mName):
+                    ?>
+                    <option value="<?= $mIdx ?>" <?= $mIdx === $prevMNum ? 'selected' : '' ?>><?= $mName ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <select id="an-select-year" class="bg-slate-800 text-white text-xs rounded-lg px-2.5 py-1.5 border border-white/15 outline-none">
+                    <option value="<?= date('Y') ?>" selected>Tahun <?= date('Y') ?></option>
+                    <option value="<?= (int)date('Y') - 1 ?>">Tahun <?= (int)date('Y') - 1 ?></option>
+                </select>
+                <button type="button" onclick="applyAnalyticsCustomMonth()" class="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition cursor-pointer">
+                    Tampilkan Rekap
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Mini KPI Ringkasan Periode Aktif -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-        <div class="p-3 rounded-2xl bg-slate-900/60 border border-white/5">
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Total Omset Periode</span>
-            <span id="kpi-period-total" class="text-base sm:text-lg font-black text-emerald-400 font-mono">Rp <?= number_format($totalWeekRev, 0, ',', '.') ?></span>
+    <!-- 3 Kartu Ringkasan Periode yang Sedang Dilihat -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+        <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-emerald-500/30">
+            <span id="kpi-period-label" class="text-[10px] text-emerald-400 uppercase tracking-wider block font-extrabold">Total Penghasilan (7 Hari Terakhir)</span>
+            <span id="kpi-period-total" class="text-xl font-black text-white font-mono mt-0.5 block">Rp <?= number_format($totalWeekRev, 0, ',', '.') ?></span>
         </div>
-        <div class="p-3 rounded-2xl bg-slate-900/60 border border-white/5">
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Puncak Tertinggi</span>
-            <span id="kpi-period-peak" class="text-sm sm:text-base font-extrabold text-white flex items-center space-x-1">
-                <span><?= htmlspecialchars($peakDayItem['label'] ?? '-') ?></span>
-                <span class="text-xs font-mono text-emerald-400 font-bold">(<?= fmtRp($maxRevenue) ?>)</span>
-            </span>
+        <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-white/10">
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Jumlah Orang yang Order</span>
+            <span id="kpi-period-orders" class="text-xl font-black text-amber-400 font-mono mt-0.5 block"><?= $totalWeekOrders ?> Pesanan</span>
         </div>
-        <div class="p-3 rounded-2xl bg-slate-900/60 border border-white/5">
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Rata-Rata Periode</span>
-            <span id="kpi-period-avg" class="text-sm sm:text-base font-extrabold text-white font-mono"><?= fmtRp($avgDailyRev) ?></span>
-        </div>
-        <div class="p-3 rounded-2xl bg-slate-900/60 border border-white/5">
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Total Transaksi Selesai</span>
-            <span id="kpi-period-orders" class="text-base sm:text-lg font-black text-amber-400 font-mono"><?= $totalWeekOrders ?> <span class="text-xs text-slate-300 font-normal">Pesanan</span></span>
+        <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-white/10 flex items-center justify-between">
+            <div>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Mode Grafik</span>
+                <span id="kpi-period-method" class="text-xs font-bold text-slate-200 mt-0.5 block">Diagram Batang / Garis</span>
+            </div>
+            <div class="inline-flex p-1 bg-slate-950 rounded-xl border border-white/10 text-[11px]">
+                <button type="button" id="btn-chart-bars" onclick="setAnalyticsChartMode('bars')" class="px-2.5 py-1 rounded-lg font-extrabold bg-emerald-500 text-slate-950 transition cursor-pointer">Batang</button>
+                <button type="button" id="btn-chart-lines" onclick="setAnalyticsChartMode('lines')" class="px-2.5 py-1 rounded-lg font-bold text-slate-300 hover:text-white transition cursor-pointer">Garis</button>
+            </div>
         </div>
     </div>
 
     <!-- SVG Responsive Chart Container -->
-    <div class="relative w-full h-64 sm:h-72">
+    <div id="analytics-chart-wrapper" class="relative w-full h-60 sm:h-64 mb-6">
         <svg id="dynamic-revenue-svg" viewBox="0 0 860 250" class="w-full h-full overflow-visible" preserveAspectRatio="none"></svg>
     </div>
-</div>
 
-<!-- ═══════════════════════════ TABEL LENGKAP REKAPITULASI PENGHASILAN (PERIODE & BULANAN) ═══════════════════════════ -->
-<div class="bg-slate-800/70 backdrop-blur-md border border-white/10 rounded-3xl p-5 sm:p-6 mb-6 shadow-xl overflow-hidden">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-5 border-b border-white/10 gap-3">
-        <div>
-            <div class="flex items-center space-x-2.5">
-                <span class="w-2.5 h-6 rounded-full bg-amber-400"></span>
-                <h2 class="text-base sm:text-lg font-black text-white">📋 Tabel Detail Rekapitulasi Penghasilan</h2>
-            </div>
-            <p class="text-xs text-slate-400 mt-1">Rincian pendapatan berdasarkan rentang waktu, metode pembayaran (QRIS vs Tunai), dan jenis layanan (Studio vs Home Service)</p>
+    <!-- TABEL SIAPA SAJA YANG ORDER PADA PERIODE INI -->
+    <div class="rounded-2xl border border-white/10 overflow-hidden bg-slate-950/60">
+        <div class="px-4 py-3 bg-slate-900/90 border-b border-white/10 flex items-center justify-between">
+            <h3 class="text-xs sm:text-sm font-black text-white flex items-center space-x-2">
+                <i class="fas fa-users text-emerald-400"></i>
+                <span id="an-orders-table-title">Daftar Siapa Saja yang Order (7 Hari Terakhir)</span>
+            </h3>
+            <span id="an-orders-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <?= $totalWeekOrders ?> Pelanggan
+            </span>
         </div>
-        <div class="inline-flex p-1 bg-slate-900/80 rounded-2xl border border-white/10 text-xs self-start sm:self-auto">
-            <button type="button" id="btn-tab-rekap-periode" onclick="switchRecapTableTab('periode')"
-                class="px-3.5 py-1.5 rounded-xl font-extrabold bg-emerald-500 text-slate-950 transition cursor-pointer">
-                Rekap Per Periode Waktu
-            </button>
-            <button type="button" id="btn-tab-rekap-bulanan" onclick="switchRecapTableTab('bulanan')"
-                class="px-3.5 py-1.5 rounded-xl font-bold text-slate-300 hover:text-white transition cursor-pointer">
-                Rekap Bulanan (<?= ((int)date('Y') - 1) ?> – <?= date('Y') ?>)
-            </button>
+        <div class="overflow-x-auto max-h-80 overflow-y-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-950/90 text-slate-400 font-bold border-b border-white/10 uppercase">
+                    <tr>
+                        <th class="p-3.5 pl-4">Kode & Waktu Order</th>
+                        <th class="p-3.5">Nama Pelanggan (Siapa yang Order)</th>
+                        <th class="p-3.5">Layanan yang Dipesan</th>
+                        <th class="p-3.5 text-center">Metode Bayar</th>
+                        <th class="p-3.5 pr-4 text-right">Nominal Bayar</th>
+                    </tr>
+                </thead>
+                <tbody id="an-orders-tbody" class="divide-y divide-white/5 text-slate-200"></tbody>
+            </table>
         </div>
-    </div>
-
-    <!-- TAB 1: Tabel Rekap Per Periode Waktu (Hari Ini, 7 Hari Lalu, Bulan Lalu, 2 Bulan Terakhir, Tahunan, dll) -->
-    <div id="table-rekap-periode" class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
-            <thead class="bg-slate-950/70 text-slate-300 font-bold border-b border-white/10 uppercase tracking-wider">
-                <tr>
-                    <th class="p-3.5 pl-4">Periode Rekapitulasi</th>
-                    <th class="p-3.5">Rentang Waktu</th>
-                    <th class="p-3.5 text-center">Total Order</th>
-                    <th class="p-3.5 text-center">Studio / Home</th>
-                    <th class="p-3.5 text-right">Omset QRIS</th>
-                    <th class="p-3.5 text-right">Omset Tunai</th>
-                    <th class="p-3.5 text-right">Rata-Rata / Order</th>
-                    <th class="p-3.5 pr-4 text-right">Total Penghasilan</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5 text-slate-200">
-                <?php foreach ($recapPeriods as $p): ?>
-                <tr class="hover:bg-white/5 transition">
-                    <td class="p-3.5 pl-4 font-bold text-white">
-                        <div class="flex items-center space-x-2.5">
-                            <span class="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center flex-shrink-0">
-                                <i class="fas <?= htmlspecialchars($p['icon'] ?? 'fa-calendar') ?> text-xs"></i>
-                            </span>
-                            <span><?= htmlspecialchars($p['label']) ?></span>
-                        </div>
-                    </td>
-                    <td class="p-3.5 text-slate-400 font-mono text-[11px]"><?= htmlspecialchars($p['sublabel']) ?></td>
-                    <td class="p-3.5 text-center font-black text-amber-300"><?= $p['orders_count'] ?></td>
-                    <td class="p-3.5 text-center text-[11px]">
-                        <span class="px-2 py-0.5 rounded bg-slate-900 border border-white/10 text-slate-200"><?= $p['studio_orders'] ?> Studio</span>
-                        <span class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 ml-1"><?= $p['home_orders'] ?> Home</span>
-                    </td>
-                    <td class="p-3.5 text-right font-mono text-emerald-300">Rp <?= number_format($p['qris_revenue'], 0, ',', '.') ?></td>
-                    <td class="p-3.5 text-right font-mono text-slate-300">Rp <?= number_format($p['tunai_revenue'], 0, ',', '.') ?></td>
-                    <td class="p-3.5 text-right font-mono text-slate-300">Rp <?= number_format($p['avg_order'], 0, ',', '.') ?></td>
-                    <td class="p-3.5 pr-4 text-right font-black text-emerald-400 font-mono text-sm">
-                        Rp <?= number_format($p['revenue'], 0, ',', '.') ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- TAB 2: Tabel Rekap Bulanan Lengkap (Januari - Desember 2025 & 2026) -->
-    <div id="table-rekap-bulanan" class="overflow-x-auto hidden">
-        <table class="w-full text-left text-xs">
-            <thead class="bg-slate-950/70 text-slate-300 font-bold border-b border-white/10 uppercase tracking-wider">
-                <tr>
-                    <th class="p-3.5 pl-4">Bulan & Tahun</th>
-                    <th class="p-3.5 text-center">Tahun</th>
-                    <th class="p-3.5 text-center">Jumlah Transaksi</th>
-                    <th class="p-3.5 text-center">Studio / Home</th>
-                    <th class="p-3.5 text-right">Pendapatan QRIS</th>
-                    <th class="p-3.5 text-right">Pendapatan Tunai</th>
-                    <th class="p-3.5 text-center">Tren Bulanan</th>
-                    <th class="p-3.5 pr-4 text-right">Total Penghasilan Bulan</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5 text-slate-200">
-                <?php foreach ($recapMonthly as $mr): ?>
-                <tr class="hover:bg-white/5 transition">
-                    <td class="p-3.5 pl-4 font-bold text-white"><?= htmlspecialchars($mr['full_label']) ?></td>
-                    <td class="p-3.5 text-center font-mono text-slate-400"><?= $mr['year'] ?></td>
-                    <td class="p-3.5 text-center font-black text-amber-300"><?= $mr['orders_count'] ?> Pesanan</td>
-                    <td class="p-3.5 text-center text-[11px]">
-                        <span class="px-2 py-0.5 rounded bg-slate-900 border border-white/10 text-slate-200"><?= $mr['studio_orders'] ?> Studio</span>
-                        <span class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 ml-1"><?= $mr['home_orders'] ?> Home</span>
-                    </td>
-                    <td class="p-3.5 text-right font-mono text-emerald-300">Rp <?= number_format($mr['qris_revenue'], 0, ',', '.') ?></td>
-                    <td class="p-3.5 text-right font-mono text-slate-300">Rp <?= number_format($mr['tunai_revenue'], 0, ',', '.') ?></td>
-                    <td class="p-3.5 text-center">
-                        <?php $isUp = ($mr['growth_pct'] >= 0); ?>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold <?= $isUp ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400' ?>">
-                            <?= $isUp ? '+' : '' ?><?= $mr['growth_pct'] ?>%
-                        </span>
-                    </td>
-                    <td class="p-3.5 pr-4 text-right font-black text-emerald-400 font-mono text-sm">
-                        Rp <?= number_format($mr['revenue'], 0, ',', '.') ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
     </div>
 </div>
 
 <script>
 const RECAP_CHARTS_DATA = <?= json_encode($recapCharts) ?>;
-let currentChartMode = 'bars';
-let currentChartPeriod = '7d';
+const RECAP_META = {
+    today_ymd: <?= json_encode($recap['today_ymd'] ?? date('Y-m-d')) ?>,
+    last_7d_start: <?= json_encode($recap['last_7d_start'] ?? date('Y-m-d', strtotime('-6 days'))) ?>,
+    prev_7d_start: <?= json_encode($recap['prev_7d_start'] ?? date('Y-m-d', strtotime('-13 days'))) ?>,
+    prev_7d_end: <?= json_encode($recap['prev_7d_end'] ?? date('Y-m-d', strtotime('-7 days'))) ?>,
+    this_ym: <?= json_encode($recap['this_ym'] ?? date('Y-m')) ?>,
+    last_ym: <?= json_encode($recap['last_ym'] ?? date('Y-m', strtotime('first day of last month'))) ?>,
+    orders: <?= json_encode($recapOrders) ?>
+};
+const MONTH_NAMES_ID = {1:'Januari',2:'Februari',3:'Maret',4:'April',5:'Mei',6:'Juni',7:'Juli',8:'Agustus',9:'September',10:'Oktober',11:'November',12:'Desember'};
+const MONTH_SHORT_ID = {1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'Mei',6:'Jun',7:'Jul',8:'Agu',9:'Sep',10:'Okt',11:'Nov',12:'Des'};
 
-function fmtRpJs(v) {
-    v = Number(v) || 0;
-    if (v >= 1000000) return 'Rp ' + (v / 1000000).toFixed(1) + 'Jt';
-    if (v >= 1000) return 'Rp ' + Math.round(v / 1000) + 'Rb';
-    return 'Rp ' + v.toLocaleString('id-ID');
-}
+let currentChartMode = 'bars';
+let activeChartSeries = (RECAP_CHARTS_DATA['7d'] && RECAP_CHARTS_DATA['7d'].series) ? RECAP_CHARTS_DATA['7d'].series : [];
 
 function fmtRpFullJs(v) {
     v = Math.round(Number(v) || 0);
@@ -429,47 +306,18 @@ function renderDynamicRevenueChart() {
     const svg = document.getElementById('dynamic-revenue-svg');
     if (!svg) return;
 
-    const chartObj = RECAP_CHARTS_DATA[currentChartPeriod] || RECAP_CHARTS_DATA['7d'];
-    if (!chartObj) return;
-
-    const series = chartObj.series || [];
-    const titleEl = document.getElementById('dynamic-chart-title');
-    const subEl = document.getElementById('dynamic-chart-subtitle');
-    if (titleEl) titleEl.textContent = '📊 Grafik Rekap Pendapatan: ' + chartObj.title;
-    if (subEl) subEl.textContent = chartObj.subtitle;
-
-    // Update KPI boxes
-    let totalRev = 0;
-    let totalOrders = 0;
+    const series = activeChartSeries || [];
     let maxRev = 0;
-    let peakLabel = '-';
     series.forEach(item => {
         const r = Number(item.revenue) || 0;
-        const o = Number(item.orders_count) || 0;
-        totalRev += r;
-        totalOrders += o;
-        if (r >= maxRev) {
-            maxRev = r;
-            peakLabel = item.label || '-';
-        }
+        if (r >= maxRev) maxRev = r;
     });
-    const avgRev = series.length > 0 ? totalRev / series.length : 0;
 
-    const kpiTotal = document.getElementById('kpi-period-total');
-    const kpiPeak = document.getElementById('kpi-period-peak');
-    const kpiAvg = document.getElementById('kpi-period-avg');
-    const kpiOrders = document.getElementById('kpi-period-orders');
-
-    if (kpiTotal) kpiTotal.textContent = fmtRpFullJs(totalRev);
-    if (kpiPeak) kpiPeak.innerHTML = `<span>${peakLabel}</span> <span class="text-xs font-mono text-emerald-400 font-bold">(${fmtRpJs(maxRev)})</span>`;
-    if (kpiAvg) kpiAvg.textContent = fmtRpJs(avgRev);
-    if (kpiOrders) kpiOrders.innerHTML = `${totalOrders} <span class="text-xs text-slate-300 font-normal">Pesanan</span>`;
-
-    const chartW = 860, chartH = 250, padL = 68, padR = 24, padT = 46, padB = 44;
+    const chartW = 860, chartH = 250, padL = 75, padR = 24, padT = 46, padB = 44;
     const innerW = chartW - padL - padR;
     const innerH = chartH - padT - padB;
     const n = Math.max(series.length, 1);
-    const barW = Math.min(48, (innerW / n) * 0.54);
+    const barW = Math.min(52, (innerW / n) * 0.52);
     const safeMax = maxRev > 0 ? maxRev : 1;
 
     const points = [];
@@ -500,17 +348,17 @@ function renderDynamicRevenueChart() {
     let gridHtml = '';
     for (let gi = 0; gi <= 4; gi++) {
         const gy = padT + (gi * innerH) / 4;
-        const gVal = fmtRpJs(safeMax * (1 - gi / 4));
+        const gVal = fmtRpFullJs(safeMax * (1 - gi / 4));
         gridHtml += `<line x1="${padL}" y1="${gy}" x2="${chartW - padR}" y2="${gy}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="3,3" stroke-width="1"/>`;
-        gridHtml += `<text x="${padL - 8}" y="${gy + 4}" fill="rgba(148,163,184,0.85)" font-size="10" font-family="'Plus Jakarta Sans', sans-serif" font-weight="600" text-anchor="end">${gVal}</text>`;
+        gridHtml += `<text x="${padL - 8}" y="${gy + 4}" fill="rgba(148,163,184,0.85)" font-size="9.5" font-family="'Plus Jakarta Sans', sans-serif" font-weight="600" text-anchor="end">${gVal}</text>`;
     }
 
     let barsHtml = '';
     bars.forEach(b => {
         const isPeak = (maxRev > 0 && b.rev === maxRev);
-        const badgeW = n > 10 ? 54 : 72;
+        const badgeW = n > 9 ? 58 : 74;
         const badgeX = -badgeW / 2;
-        const fontSz = n > 10 ? '9' : '10.5';
+        const fontSz = n > 9 ? '8.5' : '10';
         barsHtml += `<g class="group" cursor="pointer">
             <rect x="${b.bx}" y="${b.by}" width="${b.bw}" height="${b.bh}" rx="6"
                   fill="url(#${b.rev > 0 ? 'barGradActive' : 'barGradZero'})"
@@ -522,9 +370,8 @@ function renderDynamicRevenueChart() {
             ${b.rev > 0 ? `
             <g transform="translate(${b.cx}, ${b.by - 12})">
                 <rect x="${badgeX}" y="-11" width="${badgeW}" height="19" rx="6" fill="#022c22" stroke="${isPeak ? '#34d399' : '#10b981'}" stroke-width="${isPeak ? '1.6' : '1.1'}"/>
-                <text x="0" y="2" fill="#ffffff" font-size="${fontSz}" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" text-anchor="middle">${fmtRpJs(b.rev)}</text>
+                <text x="0" y="2" fill="#ffffff" font-size="${fontSz}" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" text-anchor="middle">${fmtRpFullJs(b.rev)}</text>
             </g>` : ''}
-            ${(b.bh >= 32 && b.orders > 0 && n <= 12) ? `<text x="${b.cx}" y="${padT + innerH - 9}" fill="#ecfdf5" font-size="9" font-family="'Plus Jakarta Sans', sans-serif" font-weight="bold" text-anchor="middle">${b.orders} Ord</text>` : ''}
         </g>`;
     });
 
@@ -536,8 +383,8 @@ function renderDynamicRevenueChart() {
             <circle cx="${p[0]}" cy="${p[1]}" r="5" fill="#0f172a" stroke="#10b981" stroke-width="2.5"/>
             <circle cx="${p[0]}" cy="${p[1]}" r="2.2" fill="#34d399"/>
             ${b.rev > 0 ? `<g transform="translate(${p[0]}, ${p[1] - 13})">
-                <rect x="-34" y="-11" width="68" height="19" rx="6" fill="#022c22" stroke="#10b981" stroke-width="1.2"/>
-                <text x="0" y="2" fill="#ffffff" font-size="9.5" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" text-anchor="middle">${fmtRpJs(b.rev)}</text>
+                <rect x="-36" y="-11" width="72" height="19" rx="6" fill="#022c22" stroke="#10b981" stroke-width="1.2"/>
+                <text x="0" y="2" fill="#ffffff" font-size="9.5" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" text-anchor="middle">${fmtRpFullJs(b.rev)}</text>
             </g>` : ''}
         </g>`;
     });
@@ -549,8 +396,8 @@ function renderDynamicRevenueChart() {
             <text x="${b.cx}" y="${chartH - padB + 30}" fill="#94a3b8" font-size="9" font-family="'Plus Jakarta Sans', sans-serif" font-weight="600" text-anchor="middle">${b.date}</text>`;
     });
 
-    const showBars = (currentChartMode === 'bars' || currentChartMode === 'combo') ? 'block' : 'none';
-    const showLines = (currentChartMode === 'lines' || currentChartMode === 'combo') ? 'block' : 'none';
+    const showBars = (currentChartMode === 'bars') ? 'block' : 'none';
+    const showLines = (currentChartMode === 'lines') ? 'block' : 'none';
 
     svg.innerHTML = `
         <defs>
@@ -579,56 +426,161 @@ function renderDynamicRevenueChart() {
     `;
 }
 
-function switchRevenueChartPeriod(periodKey) {
-    currentChartPeriod = periodKey;
-    document.querySelectorAll('.period-tab-btn').forEach(btn => {
-        btn.className = 'period-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-700 border border-white/10';
+function updateAnalyticsOrdersAndKpi(filteredOrders, periodTitle, chartSeries) {
+    let totalRev = 0, qrisRev = 0, tunaiRev = 0;
+    filteredOrders.forEach(o => {
+        const g = Number(o.grand_total) || 0;
+        totalRev += g;
+        if ((o.payment_method || '').toLowerCase() === 'qris') qrisRev += g; else tunaiRev += g;
     });
-    const activeBtn = document.getElementById('tab-period-' + periodKey);
-    if (activeBtn) {
-        activeBtn.className = 'period-tab-btn px-3 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/25';
+
+    document.getElementById('dynamic-chart-title').textContent = '📊 Rekap Penghasilan & Pelanggan Order (' + periodTitle + ')';
+    document.getElementById('kpi-period-label').textContent = 'Total Penghasilan (' + periodTitle + ')';
+    document.getElementById('kpi-period-total').textContent = fmtRpFullJs(totalRev);
+    document.getElementById('kpi-period-orders').textContent = filteredOrders.length + ' Pesanan';
+    document.getElementById('kpi-period-method').textContent = `QRIS: ${fmtRpFullJs(qrisRev)} · Tunai: ${fmtRpFullJs(tunaiRev)}`;
+    document.getElementById('an-orders-table-title').textContent = `Daftar Siapa Saja yang Order (${periodTitle})`;
+    document.getElementById('an-orders-badge').textContent = filteredOrders.length + ' Pelanggan';
+
+    const tbody = document.getElementById('an-orders-tbody');
+    if (tbody) {
+        if (filteredOrders.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">Belum ada pesanan pada periode ${periodTitle}.</td></tr>`;
+        } else {
+            tbody.innerHTML = filteredOrders.map(o => `
+                <tr class="hover:bg-white/5 transition">
+                    <td class="p-3.5 pl-4 font-mono text-[11px] text-slate-300">
+                        <a href="/admin/orders/${o.id}" class="text-emerald-400 font-bold hover:underline block">#${o.order_code}</a>
+                        <span>${o.formatted_dt}</span>
+                    </td>
+                    <td class="p-3.5">
+                        <strong class="text-white font-bold block text-xs">${o.customer_name}</strong>
+                        <span class="text-[11px] text-slate-400 font-mono"><i class="fab fa-whatsapp text-emerald-400 mr-1"></i>${o.customer_phone}</span>
+                    </td>
+                    <td class="p-3.5 text-slate-200">
+                        <span>${o.items_text}</span>
+                        ${o.service_type === 'home_service' ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">Home Service</span>' : '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-white/5 text-slate-400 text-[10px]">Studio</span>'}
+                    </td>
+                    <td class="p-3.5 text-center">
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold text-[10px]">${o.payment_method}</span>
+                    </td>
+                    <td class="p-3.5 pr-4 text-right font-mono font-black text-emerald-400 text-sm">
+                        ${fmtRpFullJs(o.grand_total)}
+                    </td>
+                </tr>
+            `).join('');
+        }
     }
+
+    activeChartSeries = chartSeries;
     renderDynamicRevenueChart();
+}
+
+function selectAnalyticsPeriod(mode) {
+    const btnToday = document.getElementById('an-btn-today');
+    const btn7d = document.getElementById('an-btn-7d');
+    const idleCls = 'px-3.5 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer bg-slate-900 text-slate-200 hover:bg-slate-700 border border-white/10';
+    const actCls = 'px-3.5 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/25';
+    if (btnToday) btnToday.className = (mode === 'today') ? actCls : idleCls;
+    if (btn7d) btn7d.className = (mode === '7d') ? actCls : idleCls;
+
+    const all = RECAP_META.orders || [];
+    let filtered = [];
+    let title = '';
+    let series = [];
+
+    if (mode === 'today') {
+        filtered = all.filter(o => o.date_ymd === RECAP_META.today_ymd);
+        title = 'Hari Ini';
+        series = filtered.map((o, idx) => ({
+            label: o.customer_name.split(' ')[0],
+            formatted_date: '#' + o.order_code.slice(-4),
+            revenue: o.grand_total,
+            orders_count: 1
+        }));
+        if (series.length === 0) series = [{ label: 'Hari Ini', formatted_date: RECAP_META.today_ymd, revenue: 0, orders_count: 0 }];
+    } else if (mode === '7d') {
+        filtered = all.filter(o => o.date_ymd >= RECAP_META.last_7d_start && o.date_ymd <= RECAP_META.today_ymd);
+        title = '7 Hari Terakhir';
+        series = (RECAP_CHARTS_DATA['7d'] && RECAP_CHARTS_DATA['7d'].series) || [];
+    } else if (mode === 'prev7d') {
+        filtered = all.filter(o => o.date_ymd >= RECAP_META.prev_7d_start && o.date_ymd <= RECAP_META.prev_7d_end);
+        title = '7 Hari yang Lalu (Minggu Kemarin)';
+        series = (RECAP_CHARTS_DATA['prev7d'] && RECAP_CHARTS_DATA['prev7d'].series) || [];
+    } else if (mode === 'this_month') {
+        filtered = all.filter(o => o.ym === RECAP_META.this_ym);
+        title = 'Bulan Ini';
+        series = (RECAP_CHARTS_DATA['this_month'] && RECAP_CHARTS_DATA['this_month'].series) || [];
+    } else if (mode === 'last_month') {
+        filtered = all.filter(o => o.ym === RECAP_META.last_ym);
+        title = 'Bulan Lalu / Kemarin';
+        series = (RECAP_CHARTS_DATA['last_month'] && RECAP_CHARTS_DATA['last_month'].series) || [];
+    } else if (mode === 'last_2_months') {
+        filtered = all.filter(o => o.ym === RECAP_META.last_ym || o.ym === RECAP_META.this_ym);
+        title = '2 Bulan Terakhir';
+        series = (RECAP_CHARTS_DATA['last_2_months'] && RECAP_CHARTS_DATA['last_2_months'].series) || [];
+    }
+    updateAnalyticsOrdersAndKpi(filtered, title, series);
+}
+
+function applyAnalyticsCustomMonth() {
+    const mVal = document.getElementById('an-select-month').value;
+    const yVal = Number(document.getElementById('an-select-year').value);
+    const all = RECAP_META.orders || [];
+    let filtered = [];
+    let title = '';
+    let series = [];
+
+    if (mVal === 'all') {
+        filtered = all.filter(o => Number(o.year) === yVal);
+        title = 'Tahun ' + yVal;
+        for (let m = 1; m <= 12; m++) {
+            const mOrders = filtered.filter(o => Number(o.month) === m);
+            const mRev = mOrders.reduce((s, o) => s + (Number(o.grand_total) || 0), 0);
+            series.push({
+                label: MONTH_SHORT_ID[m],
+                formatted_date: String(yVal),
+                revenue: mRev,
+                orders_count: mOrders.length
+            });
+        }
+    } else {
+        const mNum = Number(mVal);
+        filtered = all.filter(o => Number(o.year) === yVal && Number(o.month) === mNum);
+        title = 'Bulan ' + (MONTH_NAMES_ID[mNum] || mNum) + ' ' + yVal;
+        const weeks = [
+            { label: 'Minggu 1', range: '01-07', min: 1, max: 7 },
+            { label: 'Minggu 2', range: '08-14', min: 8, max: 14 },
+            { label: 'Minggu 3', range: '15-21', min: 15, max: 21 },
+            { label: 'Minggu 4+', range: '22-31', min: 22, max: 31 }
+        ];
+        series = weeks.map(w => {
+            const wOrders = filtered.filter(o => {
+                const day = Number((o.date_ymd || '').slice(-2));
+                return day >= w.min && day <= w.max;
+            });
+            return {
+                label: w.label,
+                formatted_date: w.range + ' ' + (MONTH_SHORT_ID[mNum] || ''),
+                revenue: wOrders.reduce((s, o) => s + (Number(o.grand_total) || 0), 0),
+                orders_count: wOrders.length
+            };
+        });
+    }
+    updateAnalyticsOrdersAndKpi(filtered, title, series);
 }
 
 function setAnalyticsChartMode(mode) {
     currentChartMode = mode;
     const btnBars = document.getElementById('btn-chart-bars');
     const btnLines = document.getElementById('btn-chart-lines');
-    const btnCombo = document.getElementById('btn-chart-combo');
-
-    const defaultClass = 'px-3.5 py-1.5 rounded-xl font-bold transition duration-200 text-slate-300 hover:text-white hover:bg-slate-800 flex items-center space-x-1.5';
-    const activeClass = 'px-3.5 py-1.5 rounded-xl font-extrabold transition duration-200 bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30 flex items-center space-x-1.5';
-
-    [btnBars, btnLines, btnCombo].forEach(btn => { if (btn) btn.className = defaultClass; });
-    if (mode === 'bars' && btnBars) btnBars.className = activeClass;
-    if (mode === 'lines' && btnLines) btnLines.className = activeClass;
-    if (mode === 'combo' && btnCombo) btnCombo.className = activeClass;
-
+    if (btnBars) btnBars.className = (mode === 'bars') ? 'px-2.5 py-1 rounded-lg font-extrabold bg-emerald-500 text-slate-950 transition cursor-pointer' : 'px-2.5 py-1 rounded-lg font-bold text-slate-300 hover:text-white transition cursor-pointer';
+    if (btnLines) btnLines.className = (mode === 'lines') ? 'px-2.5 py-1 rounded-lg font-extrabold bg-emerald-500 text-slate-950 transition cursor-pointer' : 'px-2.5 py-1 rounded-lg font-bold text-slate-300 hover:text-white transition cursor-pointer';
     renderDynamicRevenueChart();
-}
-
-function switchRecapTableTab(tab) {
-    const tblPeriode = document.getElementById('table-rekap-periode');
-    const tblBulanan = document.getElementById('table-rekap-bulanan');
-    const btnPeriode = document.getElementById('btn-tab-rekap-periode');
-    const btnBulanan = document.getElementById('btn-tab-rekap-bulanan');
-
-    if (tab === 'periode') {
-        if (tblPeriode) tblPeriode.classList.remove('hidden');
-        if (tblBulanan) tblBulanan.classList.add('hidden');
-        if (btnPeriode) btnPeriode.className = 'px-3.5 py-1.5 rounded-xl font-extrabold bg-emerald-500 text-slate-950 transition cursor-pointer';
-        if (btnBulanan) btnBulanan.className = 'px-3.5 py-1.5 rounded-xl font-bold text-slate-300 hover:text-white transition cursor-pointer';
-    } else {
-        if (tblPeriode) tblPeriode.classList.add('hidden');
-        if (tblBulanan) tblBulanan.classList.remove('hidden');
-        if (btnBulanan) btnBulanan.className = 'px-3.5 py-1.5 rounded-xl font-extrabold bg-emerald-500 text-slate-950 transition cursor-pointer';
-        if (btnPeriode) btnPeriode.className = 'px-3.5 py-1.5 rounded-xl font-bold text-slate-300 hover:text-white transition cursor-pointer';
-    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    renderDynamicRevenueChart();
+    selectAnalyticsPeriod('7d');
 });
 </script>
 
