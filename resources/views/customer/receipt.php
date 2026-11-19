@@ -473,6 +473,14 @@ function executeQrisAutoConfirm(isManual = false) {
     isConfirmingQris = true;
 
     const code = <?= json_encode($order['order_code'] ?? '') ?>;
+    const sessionKey = 'wijaya_sound_played_' + code;
+    sessionStorage.setItem(sessionKey, '1');
+
+    // LANGSUNG BUNYIKAN SUARA LONCENG & SUARA PEREMPUAN SEKETIKA SAAT DIKLIK / TERVERIFIKASI!
+    if (typeof playTransactionSuccessSound === 'function') {
+        try { playTransactionSuccessSound(true); } catch (e) { console.error('Audio play error:', e); }
+    }
+
     const statusPill = document.getElementById('qris-status-pill');
     const detectTitle = document.getElementById('qris-detect-title');
     const progressBar = document.getElementById('qris-progress-bar');
@@ -506,22 +514,11 @@ function executeQrisAutoConfirm(isManual = false) {
     .then(res => res.json())
     .then(data => {
         if (data.status === 'success') {
-            // Tandai di session storage bahwa suara untuk order ini sudah dibunyikan
-            const sessionKey = 'wijaya_sound_played_' + code;
-            sessionStorage.setItem(sessionKey, '1');
-
-            // 1. LANGSUNG BUNYIKAN SUARA LONCENG & SUARA HUMAN PEREMPUAN SEKETIKA!
-            if (typeof playTransactionSuccessSound === 'function') {
-                try { playTransactionSuccessSound(true); } catch (e) { console.error('Audio play error:', e); }
-            }
-
-            // 2. Tutup modal QRIS dengan mulus
             setTimeout(() => {
                 closeQrisModal();
-                // 3. Arahkan otomatis ke tampilan resi lunas
                 const targetUrl = data.redirect || ('/receipt?code=' + encodeURIComponent(code) + '&auto_wa=1&payment_status=success');
                 window.location.href = targetUrl;
-            }, 750);
+            }, 1100);
         } else {
             isConfirmingQris = false;
         }
@@ -618,11 +615,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 1500);
     }
 
-    // Bunyikan suara konfirmasi HANYA 1 KALI ketika pesanan sudah lunas
-    if (isLunas && !sessionStorage.getItem(sessionKey)) {
+    // Bunyikan suara konfirmasi HANYA 1 KALI ketika pesanan selesai dikonfirmasi (QRIS Lunas atau Pesanan Tunai)
+    if ((!isQrisPending || isLunas) && !sessionStorage.getItem(sessionKey)) {
         sessionStorage.setItem(sessionKey, '1');
         if (typeof playTransactionSuccessSound === 'function') {
-            try { playTransactionSuccessSound(); } catch (e) {}
+            try { playTransactionSuccessSound(true); } catch (e) {}
         }
     }
 

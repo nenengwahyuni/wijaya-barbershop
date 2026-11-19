@@ -789,26 +789,28 @@ function createBladeSlice(ctx, startTime, freq, volume) {
     noise.stop(startTime + 0.04);
 }
 
-// 4. Suara Ketika Transaksi Berhasil (Ascending Triumphant Chimes + Golden Cash Register Cha-Ching)
-let hasPlayedSuccessSoundSession = false;
+// 4. Suara Ketika Transaksi Berhasil (Ascending Triumphant Chimes + Golden Cash Register Cha-Ching + Suara Perempuan)
 let lastSuccessSoundTime = 0;
 
 function playTransactionSuccessSound(force = false) {
     try {
-        const now = Date.now();
-        const topWin = window.top || window;
-
-        // Cegah bunyi berulang: Hanya boleh 1 KALI berbunyi (cooldown 15 detik kecuali tombol manual force)
-        if (!force) {
-            if (hasPlayedSuccessSoundSession || topWin.__wijayaSuccessSoundPlayed || (now - lastSuccessSoundTime < 15000)) {
-                console.log('[Wijaya Audio] Suara transaksi sukses diabaikan karena sudah pernah berbunyi (hanya 1 kali).');
-                return;
-            }
+        // Jika berada di dalam iframe, jalankan langsung di window.top (Master Shell) agar suara & voice perempuan TIDAK terputus saat halaman resi reload!
+        if (window.self !== window.top && window.top && typeof window.top.playTransactionSuccessSound === 'function') {
+            window.top.playTransactionSuccessSound(force);
+            return;
         }
 
-        hasPlayedSuccessSoundSession = true;
-        try { topWin.__wijayaSuccessSoundPlayed = true; } catch (e) {}
+        const now = Date.now();
+        const topWin = window.top || window;
+        const lastTopTs = topWin.__wijayaLastSuccessTs || lastSuccessSoundTime || 0;
+
+        // Cegah bunyi ganda dalam 3.5 detik yang sama, tapi selalu izinkan untuk transaksi berikutnya
+        if (now - lastTopTs < 3500) {
+            return;
+        }
+
         lastSuccessSoundTime = now;
+        try { topWin.__wijayaLastSuccessTs = now; } catch (e) {}
 
         const ctx = getBarberAudioContext();
         if (!ctx) return;
@@ -818,10 +820,10 @@ function playTransactionSuccessSound(force = false) {
         // Ascending 4-tone triumphant celebration chord:
         // C5 (523.25 Hz) -> E5 (659.25 Hz) -> G5 (783.99 Hz) -> C6 (1046.50 Hz)
         const chordNotes = [
-            { freq: 523.25, time: 0.00, dur: 0.35, vol: 0.28 },
-            { freq: 659.25, time: 0.09, dur: 0.35, vol: 0.30 },
-            { freq: 783.99, time: 0.18, dur: 0.45, vol: 0.32 },
-            { freq: 1046.50, time: 0.28, dur: 0.95, vol: 0.38 }
+            { freq: 523.25, time: 0.00, dur: 0.35, vol: 0.32 },
+            { freq: 659.25, time: 0.09, dur: 0.35, vol: 0.34 },
+            { freq: 783.99, time: 0.18, dur: 0.45, vol: 0.36 },
+            { freq: 1046.50, time: 0.28, dur: 0.95, vol: 0.42 }
         ];
 
         chordNotes.forEach(n => {
@@ -865,7 +867,7 @@ function playTransactionSuccessSound(force = false) {
             bOsc.type = 'sine';
             bOsc.frequency.setValueAtTime(bf, nowAudio + 0.30);
             bGain.gain.setValueAtTime(0.001, nowAudio + 0.30);
-            bGain.gain.linearRampToValueAtTime(0.15, nowAudio + 0.31);
+            bGain.gain.linearRampToValueAtTime(0.18, nowAudio + 0.31);
             bGain.gain.exponentialRampToValueAtTime(0.0001, nowAudio + 0.85);
 
             bOsc.connect(bGain);
@@ -880,18 +882,18 @@ function playTransactionSuccessSound(force = false) {
         bass.type = 'sine';
         bass.frequency.setValueAtTime(261.63, nowAudio + 0.28);
         bassGain.gain.setValueAtTime(0.001, nowAudio + 0.28);
-        bassGain.gain.linearRampToValueAtTime(0.24, nowAudio + 0.31);
+        bassGain.gain.linearRampToValueAtTime(0.26, nowAudio + 0.31);
         bassGain.gain.exponentialRampToValueAtTime(0.001, nowAudio + 0.95);
         bass.connect(bassGain);
         bassGain.connect(ctx.destination);
         bass.start(nowAudio + 0.28);
         bass.stop(nowAudio + 1.0);
 
-        // 1. Suara Pertama: Lonceng kemenangan & cha-ching berbunyi (t = 0 - 0.75s)
-        // 2. Suara Kedua: Diikuti suara human perempuan mengatakan "Pembayaran berhasil terverifikasi..." (Hanya 1 kali!)
+        // 1. Suara Pertama: Lonceng kemenangan & cha-ching berbunyi (t = 0 - 0.60s)
+        // 2. Suara Kedua: Diikuti suara human perempuan mengatakan "Pembayaran berhasil terverifikasi..."
         setTimeout(() => {
-            speakFemalePaymentSuccess(null, force);
-        }, 750);
+            speakFemalePaymentSuccess(null, true);
+        }, 600);
 
         // Visual Celebration Toast with Audio Equalizer Animation
         showAudioToast('🎉 Transaksi Berhasil!', 'Lonceng & suara konfirmasi pembayaran berbunyi', true);
@@ -917,22 +919,25 @@ let lastFemaleSpeakTime = 0;
 
 function speakFemalePaymentSuccess(customText, force = false) {
     try {
+        if (window.self !== window.top && window.top && typeof window.top.speakFemalePaymentSuccess === 'function') {
+            window.top.speakFemalePaymentSuccess(customText, force);
+            return;
+        }
+
         if (!('speechSynthesis' in window)) return;
 
         const now = Date.now();
         const topWin = window.top || window;
+        const lastSpeakTs = topWin.__wijayaLastSpeakTs || lastFemaleSpeakTime || 0;
 
-        // Cegah suara perempuan terulang / berbunyi berkali-kali
-        if (!force) {
-            if (isFemaleSpeaking || topWin.__wijayaFemaleSpoken || (now - lastFemaleSpeakTime < 15000)) {
-                console.log('[Wijaya Voice] Suara perempuan diabaikan karena sudah berbicara (hanya 1 kali).');
-                return;
-            }
+        // Cegah suara perempuan berbunyi ganda dalam 3 detik yang sama
+        if (now - lastSpeakTs < 3000) {
+            return;
         }
 
         isFemaleSpeaking = true;
-        try { topWin.__wijayaFemaleSpoken = true; } catch (e) {}
         lastFemaleSpeakTime = now;
+        try { topWin.__wijayaLastSpeakTs = now; } catch (e) {}
 
         // Batalkan ucapan sebelumnya jika masih ada antrean
         window.speechSynthesis.cancel();
@@ -1103,7 +1108,68 @@ function initSoundFXBindings() {
                 if (window.top) window.top.__wijayaGlobalKnockTs = nowTime;
             } catch (err) {}
 
-            // Bunyikan tepat 1 ketukan tunggal
+            getBarberAudioContext();
+
+            // 1. KATEGORI 1: TOMBOL KONFIRMASI PEMBAYARAN QRIS (Langsung Bunyikan Suara Konfirmasi Pembayaran Lunas!)
+            const isPaymentConfirmBtn = clickable.closest(
+                '#btn-manual-confirm-qris, ' +
+                '[onclick*="executeQrisAutoConfirm"], ' +
+                '[onclick*="executeSimulatedPayment"]'
+            );
+            if (isPaymentConfirmBtn) {
+                playTransactionSuccessSound(true);
+                return;
+            }
+
+            // 2. KATEGORI 2: MEMASUKKAN KE KERANJANG / IKON KERANJANG (Suara Khusus Keranjang: Bubble Pop + Lonceng Belanja)
+            const isCartAction = clickable.closest(
+                'a[href*="/cart"], ' +
+                'form[action*="/cart"] button, ' +
+                'form[action*="/cart"], ' +
+                'button[formaction*="/cart"], ' +
+                '[data-action="cart"], ' +
+                '.btn-cart'
+            ) || (
+                clickable.textContent && (
+                    clickable.textContent.includes('Keranjang') ||
+                    clickable.textContent.includes('+ Keranjang')
+                )
+            ) || (
+                clickable.querySelector && (
+                    clickable.querySelector('.fa-shopping-bag, .fa-shopping-cart, .fa-cart-plus')
+                )
+            ) || (
+                clickable.classList && (
+                    clickable.classList.contains('fa-shopping-bag') ||
+                    clickable.classList.contains('fa-shopping-cart') ||
+                    clickable.classList.contains('fa-cart-plus')
+                )
+            );
+
+            if (isCartAction) {
+                playCartSound();
+                return;
+            }
+
+            // 3. KATEGORI 3: TOMBOL KONFIRMASI PEMESANAN / CHECKOUT (Suara Gunting Barbershop)
+            const isOrderAction = clickable.closest(
+                '.btn-order, ' +
+                'form[action*="/checkout"] button[type="submit"], ' +
+                'form[action*="/home-service"] button[type="submit"]'
+            ) || (
+                clickable.textContent && (
+                    clickable.textContent.includes('KONFIRMASI PESANAN') ||
+                    clickable.textContent.includes('Konfirmasi Pemesanan') ||
+                    clickable.textContent.includes('Pesan Sekarang')
+                )
+            );
+
+            if (isOrderAction) {
+                playOrderSound();
+                return;
+            }
+
+            // 4. KATEGORI 4: SEMUA FITUR, MENU, & TOMBOL LAINNYA (1 Suara Ketukan Tunggal "Tok")
             playGeneralClickSound();
         };
 
