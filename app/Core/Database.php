@@ -72,7 +72,7 @@ class Database
         $isVercel = (bool) (getenv('VERCEL') || getenv('VERCEL_ENV'));
 
         if ($isVercel || !is_writable($sqliteDir) || (file_exists($bundledSqliteFile) && !is_writable($bundledSqliteFile))) {
-            $sqliteFile = rtrim(sys_get_temp_dir(), '/\\') . '/wijaya_barbershop_v4.sqlite';
+            $sqliteFile = rtrim(sys_get_temp_dir(), '/\\') . '/wijaya_barbershop_v5.sqlite';
             if ((!file_exists($sqliteFile) || filesize($sqliteFile) === 0) && file_exists($bundledSqliteFile) && filesize($bundledSqliteFile) > 0) {
                 @copy($bundledSqliteFile, $sqliteFile);
                 @chmod($sqliteFile, 0666);
@@ -266,6 +266,9 @@ class Database
             return;
         }
         try {
+            $pdo->exec("PRAGMA foreign_keys = OFF;");
+            $pdo->exec("DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE order_code LIKE 'ORD%011')");
+            $pdo->exec("DELETE FROM orders WHERE order_code LIKE 'ORD%011'");
             $orderCols = array_column($pdo->query("PRAGMA table_info(orders)")->fetchAll(), 'name');
             foreach ($_SESSION['serverless_orders'] as $oid => $orderData) {
                 if (!is_array($orderData) || empty($orderData['order_code']))

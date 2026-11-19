@@ -93,7 +93,6 @@
                     <span class="w-2.5 h-6 rounded-full barber-pole border border-slate-700 shadow-sm"></span>
                     <h3 class="font-black text-white text-base tracking-tight">Rekap Penghasilan & Daftar Pelanggan Order</h3>
                 </div>
-                <p class="text-xs text-slate-400 mt-1">Pilih <strong>Hari Ini</strong>, <strong>7 Hari Terakhir</strong>, atau klik <strong>Atur Periode / Bulan</strong> untuk melihat omset & siapa saja yang memesan.</p>
             </div>
 
             <!-- Tombol Utama: Hari Ini, 7 Hari, & Atur Bulan -->

@@ -12,12 +12,12 @@ class Order extends Model
     {
         $pdo = self::getPdo();
         $sql = "SELECT o.*, 
-                       COALESCE(NULLIF(o.customer_name, ''), u.fullname) as customer_name, 
-                       COALESCE(NULLIF(o.customer_phone, ''), u.phone) as customer_phone, 
+                       COALESCE(NULLIF(o.customer_name, ''), u.fullname, 'Pelanggan') as customer_name, 
+                       COALESCE(NULLIF(o.customer_phone, ''), u.phone, '-') as customer_phone, 
                        u.email as customer_email,
                        b.fullname as barber_name, b.phone as barber_phone
                 FROM orders o
-                JOIN users u ON o.user_id = u.id
+                LEFT JOIN users u ON o.user_id = u.id
                 LEFT JOIN users b ON o.barber_id = b.id
                 WHERE o.id = ? AND o.deleted_at IS NULL
                 LIMIT 1";
@@ -37,12 +37,12 @@ class Order extends Model
     {
         $pdo = self::getPdo();
         $sql = "SELECT o.*, 
-                       COALESCE(NULLIF(o.customer_name, ''), u.fullname) as customer_name, 
-                       COALESCE(NULLIF(o.customer_phone, ''), u.phone) as customer_phone, 
+                       COALESCE(NULLIF(o.customer_name, ''), u.fullname, 'Pelanggan') as customer_name, 
+                       COALESCE(NULLIF(o.customer_phone, ''), u.phone, '-') as customer_phone, 
                        u.email as customer_email,
                        b.fullname as barber_name, b.phone as barber_phone
                 FROM orders o
-                JOIN users u ON o.user_id = u.id
+                LEFT JOIN users u ON o.user_id = u.id
                 LEFT JOIN users b ON o.barber_id = b.id
                 WHERE o.order_code = ? AND o.deleted_at IS NULL
                 LIMIT 1";
@@ -62,11 +62,11 @@ class Order extends Model
     {
         $pdo = self::getPdo();
         $sql = "SELECT o.*, 
-                       COALESCE(NULLIF(o.customer_name, ''), u.fullname) as customer_name, 
-                       COALESCE(NULLIF(o.customer_phone, ''), u.phone) as customer_phone,
+                       COALESCE(NULLIF(o.customer_name, ''), u.fullname, 'Pelanggan') as customer_name, 
+                       COALESCE(NULLIF(o.customer_phone, ''), u.phone, '-') as customer_phone,
                        b.fullname as barber_name, b.phone as barber_phone
                 FROM orders o
-                JOIN users u ON o.user_id = u.id
+                LEFT JOIN users u ON o.user_id = u.id
                 LEFT JOIN users b ON o.barber_id = b.id
                 WHERE o.deleted_at IS NULL";
         

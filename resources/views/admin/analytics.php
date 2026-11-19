@@ -168,9 +168,6 @@ foreach ($revenueChart as $rc) {
                     📊 Rekap Penghasilan & Pelanggan Order (7 Hari Terakhir)
                 </h2>
             </div>
-            <p id="dynamic-chart-subtitle" class="text-xs text-slate-400 mt-1">
-                Tampilan simpel: Lihat rekap <strong>Hari Ini</strong> atau <strong>7 Hari Terakhir</strong>, atau klik <strong>Atur Bulan</strong> untuk cek bulan lalu.
-            </p>
         </div>
 
         <!-- 3 Tombol Utama Simpel -->
