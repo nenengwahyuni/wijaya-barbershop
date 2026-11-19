@@ -228,10 +228,10 @@
             <?php foreach ($items as $idx => $item): ?>
             <?php $itemImg = \App\Models\Item::getImageUrl($item['image_path'] ?? null, $item['item_name'] ?? ''); ?>
             <div class="tilt-card-luxury card-premium bg-slate-900/90 rounded-3xl border border-white/10 overflow-hidden shadow-xl shadow-black/25 flex flex-col group reveal delay-<?= min(($idx + 1) * 100, 500) ?> text-white">
-                <!-- Image Header with Item Specific Photo & Zoom Effect -->
+                <!-- Image Header with Item Specific Photo & Crisp HD Rendering -->
                 <div class="h-52 bg-slate-950 relative overflow-hidden flex items-center justify-center">
-                    <div class="absolute inset-0 bg-cover bg-center img-zoom transition-transform duration-700 group-hover:scale-110" style="background-image: url('<?= htmlspecialchars($itemImg) ?>');"></div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-black/30"></div>
+                    <img src="<?= htmlspecialchars($itemImg) ?>" alt="<?= htmlspecialchars($item['item_name']) ?>" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" style="filter: contrast(1.06) saturate(1.06) brightness(1.03); image-rendering: -webkit-optimize-contrast;">
+                    <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-950/90 via-slate-950/35 to-transparent pointer-events-none"></div>
                     <div class="relative z-10 text-center w-full px-4 flex justify-between items-end h-full pb-3">
                         <span class="px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md text-emerald-400 font-extrabold text-[11px] uppercase tracking-wider border border-emerald-500/30 shadow-md">
                             <?= htmlspecialchars($item['category_name']) ?>
