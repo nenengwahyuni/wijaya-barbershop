@@ -25,7 +25,8 @@ class SmartController extends Controller
         }
 
         $data = [
-            'title'          => 'Analitik Cerdas — AI Insights',
+            'title'          => 'Analitik Cerdas & Rekap Penghasilan — AI Insights',
+            'revenue_recap'  => SmartAnalytics::getRevenueRecapSummary(),
             'revenue_chart'  => SmartAnalytics::getRevenueChart(7),
             'revenue_trend'  => SmartAnalytics::getRevenueTrend(),
             'busy_hours'     => SmartAnalytics::getBusyHours(),

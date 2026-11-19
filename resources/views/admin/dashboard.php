@@ -78,6 +78,55 @@
         </div>
     </div>
 
+    <!-- Rekapitulasi Penghasilan Multi-Periode (Hari Ini, 7 Hari Lalu, Bulan Kemarin, 2 Bulan Terakhir, Tahunan) -->
+    <?php
+    $dashPeriods = $revenueRecap['periods'] ?? [];
+    $dashFeaturedKeys = ['today', 'last_7_days', 'prev_7_days', 'this_month', 'last_month', 'last_2_months', 'this_year', 'last_year'];
+    if (!empty($dashPeriods)):
+    ?>
+    <div class="bg-slate-900/80 backdrop-blur-xl rounded-3xl border border-white/10 shadow-xl shadow-black/25 p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-5 border-b border-white/10 gap-3">
+            <div>
+                <div class="flex items-center space-x-2.5">
+                    <span class="w-2.5 h-6 rounded-full barber-pole border border-slate-700 shadow-sm"></span>
+                    <h3 class="font-black text-white text-base tracking-tight">Rekapitulasi Penghasilan Multi-Periode</h3>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Ringkasan penghasilan berdasarkan rentang waktu: 7 Hari Terakhir, Minggu Lalu, Bulan Kemarin, 2 Bulan Terakhir, & Tahunan.</p>
+            </div>
+            <a href="/admin/analytics" class="text-xs font-bold text-emerald-300 hover:text-white flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-600 border border-emerald-500/30 transition self-start sm:self-auto">
+                <i class="fas fa-chart-column text-xs"></i>
+                <span>Lihat Grafik & Tabel Rekap Lengkap</span>
+                <i class="fas fa-arrow-right text-[10px]"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <?php foreach ($dashFeaturedKeys as $dk): ?>
+            <?php if (empty($dashPeriods[$dk])) continue; $dp = $dashPeriods[$dk]; ?>
+            <div class="p-4 rounded-2xl bg-slate-950/70 border border-white/10 hover:border-emerald-500/40 transition flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <span class="text-[11px] font-extrabold text-emerald-400 uppercase tracking-wider truncate"><?= htmlspecialchars($dp['label']) ?></span>
+                        <i class="fas <?= htmlspecialchars($dp['icon'] ?? 'fa-wallet') ?> text-xs text-slate-400"></i>
+                    </div>
+                    <p class="text-xl font-black text-white font-mono">
+                        Rp <?= number_format($dp['revenue'], 0, ',', '.') ?>
+                    </p>
+                    <p class="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
+                        <span><?= htmlspecialchars($dp['sublabel']) ?></span>
+                        <span class="font-bold text-amber-300"><?= $dp['orders_count'] ?> Order</span>
+                    </p>
+                </div>
+                <div class="mt-2.5 pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400">
+                    <span>Studio: <strong class="text-slate-200"><?= $dp['studio_orders'] ?></strong> · Home: <strong class="text-amber-300"><?= $dp['home_orders'] ?></strong></span>
+                    <span class="text-emerald-400 font-bold">QRIS: <?= $dp['qris_orders'] ?></span>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Main Grid: Pesanan Terbaru & Capster On-Duty -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <!-- Tabel Pesanan Masuk Terbaru (8 Kolom) -->

@@ -52,7 +52,8 @@ class AdminController extends Controller
         $stmtHomeService = $pdo->query("SELECT COUNT(*) as total FROM orders WHERE service_type = 'home_service' AND deleted_at IS NULL");
         $homeServiceCount = (int) ($stmtHomeService->fetch()['total'] ?? 0);
 
-        // 6. Pesanan Terbaru
+        // 6. Pesanan Terbaru & Rekap Penghasilan Multi-Periode
+        $revenueRecap = \App\Models\SmartAnalytics::getRevenueRecapSummary();
         $recentOrders = array_slice(Order::allWithCustomer(), 0, 6);
 
         return $this->render('admin.dashboard', [
@@ -64,6 +65,7 @@ class AdminController extends Controller
             'homeServiceCount' => $homeServiceCount,
             'barbersOnDuty' => $barbersOnDuty,
             'recentOrders' => $recentOrders,
+            'revenueRecap' => $revenueRecap,
             'success' => $this->getFlash('success'),
             'error' => $this->getFlash('error')
         ], 'admin');
