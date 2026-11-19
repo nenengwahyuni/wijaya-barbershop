@@ -275,7 +275,7 @@
 </section>
 
 <!-- Banner Promo Layanan Cukur Panggilan (Home Service) with Ambient Animation -->
-<section class="py-16 bg-slate-100/60">
+<section class="py-16 bg-slate-950/75 border-t border-white/5 relative z-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="rounded-3xl bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-950 text-white p-8 sm:p-14 shadow-2xl border border-slate-800 relative overflow-hidden reveal-zoom">
             <!-- Ambient Glow inside Banner -->

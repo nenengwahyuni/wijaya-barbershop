@@ -154,7 +154,7 @@ $autoWa = (!$isQrisPending) && ($autoWa ?? (isset($_GET['auto_wa']) || isset($_G
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <!-- Action Top Bar (No Print) -->
     <div class="mb-6 flex items-center justify-between no-print">
-        <a href="/" class="text-sm font-bold text-slate-600 hover:text-emerald-600 flex items-center space-x-1">
+        <a href="/" class="text-xs font-bold text-slate-200 hover:text-emerald-400 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 px-3.5 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm">
             <i class="fas fa-arrow-left text-xs"></i>
             <span>Kembali ke Beranda</span>
         </a>
