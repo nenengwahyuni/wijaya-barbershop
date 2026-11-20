@@ -528,7 +528,7 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/admin';
     }
     </script>
 
-    <script src="/js/app.js?v=20261120b"></script>
+    <script src="/js/app.js?v=20261120c"></script>
     <script>
         // Admin Background Brightness Controller
         let adminBgState = 0;

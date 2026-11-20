@@ -33,7 +33,7 @@
     <iframe id="wijaya-viewport-frame" src="<?= htmlspecialchars($frameSrc) ?>" allow="autoplay"></iframe>
 
     <!-- Persistent Music Engine in Top Window -->
-    <script src="/js/app.js?v=20261120b"></script>
+    <script src="/js/app.js?v=20261120c"></script>
     <script>
         // Sync URL & Title from iframe to browser address bar
         const frame = document.getElementById('wijaya-viewport-frame');

@@ -1080,14 +1080,15 @@ function initSoundFXBindings() {
     window.playTransactionSuccessSound = playTransactionSuccessSound;
     window.toggleAudioPreview = toggleAudioPreview;
 
-    // A. GLOBAL CLICK LISTENER: HANYA 1 KETUKAN TUNGGAL saat benar-benar KLIK fitur/tombol/menu (TIDAK berbunyi saat scroll di HP)
+    // A. GLOBAL LISTENER:
+    // - Di LAPTOP (mouse/trackpad): langsung bunyi saat klik (pointerdown mouse) agar form submit (+ Keranjang / Konfirmasi Pesanan) & link tidak pernah terlewat.
+    // - Di HP (touch): hanya bunyi saat tap/click murni (TIDAK berbunyi saat jari menggeser / scroll layar).
     if (!window.__wijayaKnockBound) {
         window.__wijayaKnockBound = true;
 
         let touchStartX = 0;
         let touchStartY = 0;
         let isTouchScrolling = false;
-        let lastScrollTs = 0;
 
         document.addEventListener('touchstart', (e) => {
             if (e.touches && e.touches.length > 0) {
@@ -1101,20 +1102,19 @@ function initSoundFXBindings() {
             if (e.touches && e.touches.length > 0) {
                 const dx = Math.abs(e.touches[0].clientX - touchStartX);
                 const dy = Math.abs(e.touches[0].clientY - touchStartY);
-                if (dx > 8 || dy > 8) {
+                if (dx > 10 || dy > 10) {
                     isTouchScrolling = true;
                 }
             }
         }, { passive: true, capture: true });
 
-        window.addEventListener('scroll', () => {
-            isTouchScrolling = true;
-            lastScrollTs = Date.now();
-        }, { passive: true, capture: true });
-
         const handleInteractiveKnock = (e) => {
-            // Jika jari sedang menggeser / scroll di HP, JANGAN bunyikan ketukan
-            if (isTouchScrolling || (Date.now() - lastScrollTs < 150)) {
+            // Jika event adalah pointerdown dari sentuhan jari HP (touch), tunda ke event 'click' agar bisa membedakan tap vs scroll
+            if (e.type === 'pointerdown' && e.pointerType === 'touch') {
+                return;
+            }
+            // Jika di HP jari baru saja dipakai menggeser/scroll, jangan bunyikan ketukan
+            if (e.type === 'click' && isTouchScrolling) {
                 return;
             }
 
@@ -1136,7 +1136,7 @@ function initSoundFXBindings() {
 
             if (!clickable) return;
 
-            // Pastikan HANYA 1 KETUKAN per klik (global cooldown 280ms lintas frame & elemen)
+            // Pastikan HANYA 1 KETUKAN per klik (global cooldown 260ms lintas frame & elemen)
             const nowTime = Date.now();
             let lastTs = lastClickAudioTime;
             try {
@@ -1145,7 +1145,7 @@ function initSoundFXBindings() {
                 }
             } catch (err) {}
 
-            if (nowTime - lastTs < 280) return;
+            if (nowTime - lastTs < 260) return;
 
             lastClickAudioTime = nowTime;
             try {
@@ -1204,7 +1204,9 @@ function initSoundFXBindings() {
                 clickable.textContent && (
                     clickable.textContent.includes('KONFIRMASI PESANAN') ||
                     clickable.textContent.includes('Konfirmasi Pemesanan') ||
-                    clickable.textContent.includes('Pesan Sekarang')
+                    clickable.textContent.includes('Pesan Sekarang') ||
+                    clickable.textContent.includes('Lanjut ke Pembayaran') ||
+                    clickable.textContent.includes('Buat Pesanan')
                 )
             );
 
@@ -1217,6 +1219,7 @@ function initSoundFXBindings() {
             playGeneralClickSound();
         };
 
+        document.addEventListener('pointerdown', handleInteractiveKnock, true);
         document.addEventListener('click', handleInteractiveKnock, true);
     }
 

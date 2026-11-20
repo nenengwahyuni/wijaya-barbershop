@@ -96,24 +96,24 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
 
     <!-- Top Navigation Bar (Sesuai Gambar 33 Skripsi + Efek Glass & Barber Pole) -->
     <header class="bg-slate-900 border-b border-slate-800/90 sticky top-0 z-40 text-white transition-all duration-300">
-        <div class="w-full max-w-[1536px] mx-auto px-3 sm:px-5 lg:px-6">
-            <div class="flex items-center justify-between h-20 gap-2 lg:gap-4">
+        <div class="w-full max-w-[1536px] mx-auto px-2.5 sm:px-5 lg:px-6">
+            <div class="flex items-center justify-between h-16 sm:h-20 gap-1.5 sm:gap-2 lg:gap-4">
                 <!-- Brand / Logo with Animated Barber Pole & Snipping Shears -->
-                <a href="/" class="flex items-center space-x-2.5 sm:space-x-3.5 group flex-shrink-0">
-                    <div class="relative w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/35 group-hover:scale-105 transition duration-300 scissor-snip-container flex-shrink-0">
+                <a href="/" class="flex items-center space-x-2 sm:space-x-3.5 group min-w-0 flex-shrink">
+                    <div class="relative w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/35 group-hover:scale-105 transition duration-300 scissor-snip-container flex-shrink-0">
                         <!-- Dual Blade Animated SVG Scissors -->
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white transform -rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="w-4 h-4 sm:w-6 sm:h-6 text-white transform -rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="6" cy="6" r="3"/>
                             <path class="scissor-top" d="M8.12 8.12 12 12l7.5-7.5"/>
                             <circle cx="6" cy="18" r="3"/>
                             <path class="scissor-bottom" d="M8.12 15.88 12 12l7.5 7.5"/>
                         </svg>
                         <!-- Animated Barber Pole Indicator Pill -->
-                        <span class="absolute -bottom-1 -right-1 w-3.5 h-6 rounded-full barber-pole border border-slate-900 shadow-md"></span>
+                        <span class="absolute -bottom-1 -right-1 w-2.5 h-4.5 sm:w-3.5 sm:h-6 rounded-full barber-pole border border-slate-900 shadow-md"></span>
                     </div>
-                    <div>
-                        <div class="flex items-center space-x-1.5 sm:space-x-2">
-                            <span class="text-lg sm:text-xl font-black tracking-tight text-white block group-hover:text-emerald-400 transition whitespace-nowrap">
+                    <div class="min-w-0">
+                        <div class="flex items-center space-x-1 sm:space-x-2">
+                            <span class="text-[15px] sm:text-xl font-black tracking-tight text-white block group-hover:text-emerald-400 transition whitespace-nowrap">
                                 Wijaya <span class="text-emerald-400">Barber</span>
                             </span>
                             <!-- Lounge Soundwave Equalizer (Tampil di Layar Lebar) -->
@@ -124,8 +124,8 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
                                 <span class="eq-bar"></span>
                             </div>
                         </div>
-                        <span class="text-[9px] sm:text-[10px] uppercase tracking-widest text-emerald-400/90 font-bold block -mt-0.5 whitespace-nowrap">
-                            Modern & Grooming &bull; Metro
+                        <span class="text-[7.5px] sm:text-[10px] uppercase tracking-wider sm:tracking-widest text-emerald-400/90 font-bold block -mt-0.5 whitespace-nowrap truncate">
+                            Modern & Grooming <span class="hidden sm:inline">&bull; Metro</span>
                         </span>
                     </div>
                 </a>
@@ -165,9 +165,9 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
                 </nav>
 
                 <!-- Actions: Cart & Profile / Login & Mobile Toggle -->
-                <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+                <div class="flex items-center space-x-1.5 sm:space-x-3 flex-shrink-0">
                     <!-- Background Music Toggle Button in Navbar (Wijaya Lounge Music) -->
-                    <button type="button" onclick="toggleBarberMusic()" id="navbar-music-toggle" class="relative flex items-center space-x-1.5 px-2.5 py-2 rounded-2xl bg-slate-800/80 hover:bg-emerald-600/25 text-emerald-400 border border-emerald-500/30 text-xs font-bold transition shadow-inner btn-magnetic whitespace-nowrap" title="Putar / Jeda Musik Santai Barbershop">
+                    <button type="button" onclick="toggleBarberMusic()" id="navbar-music-toggle" class="relative w-8 h-8 sm:w-auto sm:h-auto flex items-center justify-center space-x-1.5 sm:px-2.5 sm:py-2 rounded-xl sm:rounded-2xl bg-slate-800/80 hover:bg-emerald-600/25 text-emerald-400 border border-emerald-500/30 text-xs font-bold transition shadow-inner btn-magnetic whitespace-nowrap" title="Putar / Jeda Musik Santai Barbershop">
                         <i class="fas fa-music text-xs text-emerald-400"></i>
                         <span id="navbar-music-label" class="hidden 2xl:inline text-[11px] font-black">Musik: OFF</span>
                     </button>
@@ -179,10 +179,10 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
                     </button>
 
                     <!-- Cart Icon with badge -->
-                    <a href="/cart" class="relative p-2 sm:p-2.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 transition shadow-inner hover:scale-105" title="Keranjang Pesanan">
-                        <i class="fas fa-shopping-bag text-base sm:text-lg"></i>
+                    <a href="/cart" class="relative w-8 h-8 sm:w-auto sm:h-auto flex items-center justify-center sm:p-2.5 rounded-xl sm:rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 transition shadow-inner hover:scale-105" title="Keranjang Pesanan">
+                        <i class="fas fa-shopping-bag text-sm sm:text-lg"></i>
                         <?php if ($cartCount > 0): ?>
-                        <span class="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white font-black text-xs w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-slate-900 animate-pulse">
+                        <span class="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white font-black text-[10px] sm:text-xs w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center ring-2 ring-slate-900 animate-pulse">
                             <?= $cartCount ?>
                         </span>
                         <?php endif; ?>
@@ -191,12 +191,12 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
                     <!-- User Auth Button -->
                     <?php if (Auth::check()): ?>
                     <div class="relative group" id="user-dropdown-wrapper">
-                        <button type="button" onclick="const m=document.getElementById('user-dropdown-menu'); if(m) m.classList.toggle('hidden');" class="flex items-center space-x-2 bg-slate-800/80 hover:bg-slate-700 px-2.5 sm:px-3.5 py-2 rounded-2xl transition text-xs sm:text-sm font-medium border border-slate-700/80 shadow-sm cursor-pointer">
-                            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white flex items-center justify-center font-bold text-xs uppercase shadow-sm">
+                        <button type="button" onclick="const m=document.getElementById('user-dropdown-menu'); if(m) m.classList.toggle('hidden');" class="flex items-center space-x-1.5 sm:space-x-2 bg-slate-800/80 hover:bg-slate-700 px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl transition text-xs sm:text-sm font-medium border border-slate-700/80 shadow-sm cursor-pointer">
+                            <div class="w-5 h-5 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white flex items-center justify-center font-bold text-[10px] sm:text-xs uppercase shadow-sm flex-shrink-0">
                                 <?= substr($currentUser['fullname'], 0, 1) ?>
                             </div>
-                            <span class="max-w-[70px] sm:max-w-[100px] xl:max-w-[120px] truncate text-slate-200 font-bold whitespace-nowrap"><?= htmlspecialchars($currentUser['fullname']) ?></span>
-                            <i class="fas fa-chevron-down text-[10px] text-slate-400 group-hover:rotate-180 transition duration-200"></i>
+                            <span class="max-w-[54px] sm:max-w-[100px] xl:max-w-[120px] truncate text-[11px] sm:text-sm text-slate-200 font-bold whitespace-nowrap"><?= htmlspecialchars($currentUser['fullname']) ?></span>
+                            <i class="fas fa-chevron-down text-[9px] sm:text-[10px] text-slate-400 group-hover:rotate-180 transition duration-200"></i>
                         </button>
                         <div id="user-dropdown-menu" class="absolute right-0 top-full pt-2 w-64 hidden group-hover:block z-50 animate-fade-in">
                             <div class="bg-white rounded-2xl shadow-2xl py-2 border border-slate-100 text-slate-800">
@@ -234,15 +234,15 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
                         </div>
                     </div>
                     <?php else: ?>
-                    <a href="/login" class="inline-flex items-center space-x-1.5 sm:space-x-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-extrabold text-xs sm:text-sm px-3.5 sm:px-5 py-2.5 rounded-2xl transition shadow-lg shadow-emerald-600/25 shimmer-btn whitespace-nowrap">
+                    <a href="/login" class="inline-flex items-center space-x-1 sm:space-x-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-extrabold text-[11px] sm:text-sm px-2.5 sm:px-5 py-1.5 sm:py-2.5 rounded-xl sm:rounded-2xl transition shadow-lg shadow-emerald-600/25 shimmer-btn whitespace-nowrap">
                         <i class="fas fa-user-circle"></i>
                         <span>Masuk</span>
                     </a>
                     <?php endif; ?>
 
                     <!-- Mobile / Tablet Hamburger Toggle Button (Tampil di Layar di bawah XL) -->
-                    <button type="button" onclick="toggleMobileNav()" class="xl:hidden p-2.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/80 transition" title="Menu Navigasi">
-                        <i class="fas fa-bars text-lg" id="mobile-menu-icon"></i>
+                    <button type="button" onclick="toggleMobileNav()" class="xl:hidden w-8 h-8 sm:w-auto sm:h-auto flex items-center justify-center sm:p-2.5 rounded-xl sm:rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/80 transition flex-shrink-0" title="Menu Navigasi">
+                        <i class="fas fa-bars text-sm sm:text-lg" id="mobile-menu-icon"></i>
                     </button>
                 </div>
             </div>
@@ -634,6 +634,6 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
     </script>
 
     <!-- App JS with Animation Engine -->
-    <script src="/js/app.js?v=20261120b"></script>
+    <script src="/js/app.js?v=20261120c"></script>
 </body>
 </html>
