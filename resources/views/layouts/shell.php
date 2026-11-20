@@ -20,6 +20,7 @@
         #wijaya-viewport-frame {
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             border: 0;
             display: block;
             margin: 0;
@@ -32,7 +33,7 @@
     <iframe id="wijaya-viewport-frame" src="<?= htmlspecialchars($frameSrc) ?>" allow="autoplay"></iframe>
 
     <!-- Persistent Music Engine in Top Window -->
-    <script src="/js/app.js"></script>
+    <script src="/js/app.js?v=20261120b"></script>
     <script>
         // Sync URL & Title from iframe to browser address bar
         const frame = document.getElementById('wijaya-viewport-frame');

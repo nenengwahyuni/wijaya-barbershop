@@ -634,6 +634,6 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/';
     </script>
 
     <!-- App JS with Animation Engine -->
-    <script src="/js/app.js"></script>
+    <script src="/js/app.js?v=20261120b"></script>
 </body>
 </html>

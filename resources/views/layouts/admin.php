@@ -32,9 +32,38 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/admin';
     <link rel="stylesheet" href="/css/style.css">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Desktop / Laptop (>= 768px): Tampilan Tetap 100% Sama */
+        @media (min-width: 768px) {
+            #admin-sidebar {
+                position: static !important;
+                transform: translateX(0) !important;
+                width: 16rem !important;
+                flex-shrink: 0 !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
+            }
+        }
+        /* Mobile / HP (< 768px): Sidebar jadi Drawer agar konten utama tampil penuh 100% layar HP */
+        @media (max-width: 767px) {
+            #admin-sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                width: 16.5rem !important;
+                height: 100dvh !important;
+                max-height: 100dvh !important;
+                z-index: 60 !important;
+                transform: translateX(-105%);
+                transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            #admin-sidebar.mobile-open {
+                transform: translateX(0) !important;
+            }
+        }
     </style>
 </head>
-<body class="relative min-h-screen text-slate-100 flex flex-row overflow-hidden bg-slate-950" style="display: flex !important; flex-direction: row !important; height: 100vh; width: 100vw; overflow: hidden; margin: 0;">
+<body class="relative min-h-screen text-slate-100 flex flex-row overflow-hidden bg-slate-950" style="display: flex !important; flex-direction: row !important; height: 100dvh; width: 100vw; overflow: hidden; margin: 0;">
 
     <!-- Interactive HTML5 Barbershop Particle Canvas (Ember & Stardust Engine) -->
     <canvas id="barber-particle-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-60"></canvas>
@@ -50,8 +79,11 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/admin';
     <div class="fixed -bottom-36 -right-36 w-96 h-96 bg-teal-500/15 rounded-full blur-3xl animate-float pointer-events-none z-0"></div>
     <div class="fixed top-1/2 left-1/3 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl animate-float-reverse pointer-events-none z-0"></div>
 
+    <!-- Mobile Backdrop Overlay (Hanya muncul di HP saat sidebar dibuka) -->
+    <div id="admin-sidebar-backdrop" onclick="toggleAdminMobileSidebar(false)" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden md:hidden transition-opacity"></div>
+
     <!-- Sidebar (Sesuai Gambar 34 Skripsi: Wijaya, Dashboard, Kelola Pesanan, Daftar Item, Users, Kelola Role, Categories) -->
-    <aside class="w-64 bg-slate-900/90 backdrop-blur-xl border-r border-white/10 flex flex-col flex-shrink-0 z-20 h-screen text-slate-200" style="width: 16rem; flex-shrink: 0; height: 100vh; max-height: 100vh; overflow: hidden;">
+    <aside id="admin-sidebar" class="w-64 bg-slate-900/95 backdrop-blur-xl border-r border-white/10 flex flex-col flex-shrink-0 z-20 h-screen text-slate-200 overflow-hidden">
         <!-- Sidebar Header / Logo with Animated Barber Pole (Pinned Top) -->
         <div class="h-16 px-5 border-b border-white/10 flex items-center justify-between flex-shrink-0 bg-slate-900/80">
             <a href="/admin" class="flex items-center space-x-2.5 group">
@@ -59,9 +91,12 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/admin';
                 <span class="text-xl font-black text-white tracking-tight">Wijaya</span>
                 <span class="text-[10px] px-2 py-0.5 rounded-md bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-extrabold uppercase tracking-wider shadow-sm">Staff</span>
             </a>
-            <div class="flex items-center space-x-1">
+            <div class="flex items-center space-x-1.5">
                 <button type="button" onclick="toggleAdminBgBrightness()" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-emerald-600 text-amber-300 flex items-center justify-center transition" title="Kecerahan Background Studio">
                     <i class="fas fa-sun text-xs"></i>
+                </button>
+                <button type="button" onclick="toggleAdminMobileSidebar(false)" class="md:hidden w-7 h-7 rounded-lg bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white flex items-center justify-center transition" title="Tutup Menu">
+                    <i class="fas fa-times text-xs"></i>
                 </button>
             </div>
         </div>
@@ -160,25 +195,29 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/admin';
     </aside>
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col h-full overflow-hidden relative z-10" style="flex: 1 1 0%; min-width: 0; height: 100vh; display: flex; flex-direction: column;">
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative z-10" style="flex: 1 1 0%; min-width: 0; height: 100dvh; display: flex; flex-direction: column;">
         
         <!-- Top Navbar with Frosted Glass & Live Radar Indicator -->
-        <header class="h-20 bg-slate-900/80 backdrop-blur-xl border-b border-white/10 px-8 flex items-center justify-between flex-shrink-0 text-white relative z-10 shadow-sm" style="height: 5rem; flex-shrink: 0;">
-            <div class="flex items-center space-x-4">
-                <div class="sonar-radar-box">
+        <header class="h-16 md:h-20 bg-slate-900/80 backdrop-blur-xl border-b border-white/10 px-3.5 sm:px-6 md:px-8 flex items-center justify-between flex-shrink-0 text-white relative z-10 shadow-sm">
+            <div class="flex items-center space-x-2.5 sm:space-x-4 min-w-0">
+                <!-- Tombol Menu Sidebar khusus HP -->
+                <button type="button" onclick="toggleAdminMobileSidebar(true)" class="md:hidden w-9 h-9 rounded-xl bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 flex items-center justify-center flex-shrink-0 transition shadow-sm" title="Buka Menu Admin">
+                    <i class="fas fa-bars text-sm"></i>
+                </button>
+                <div class="sonar-radar-box hidden sm:block">
                     <div class="sonar-sweep-hand"></div>
                     <div class="sonar-ring"></div>
                 </div>
-                <div>
+                <div class="min-w-0">
                     <div class="flex items-center space-x-2">
-                        <h2 class="text-xl font-black text-white tracking-tight"><?= htmlspecialchars($title ?? 'Dashboard') ?></h2>
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping" title="Sistem Aktif Real-Time"></span>
+                        <h2 class="text-sm sm:text-lg md:text-xl font-black text-white tracking-tight truncate"><?= htmlspecialchars($title ?? 'Dashboard') ?></h2>
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping flex-shrink-0" title="Sistem Aktif Real-Time"></span>
                     </div>
-                    <p class="text-xs text-slate-400">Sistem Informasi Manajemen Wijaya Barbershop &bull; Kota Metro</p>
+                    <p class="text-[10px] sm:text-xs text-slate-400 truncate">Sistem Informasi Manajemen Wijaya Barbershop &bull; Kota Metro</p>
                 </div>
             </div>
             
-            <div class="flex items-center space-x-5">
+            <div class="flex items-center space-x-2 sm:space-x-4 md:space-x-5 flex-shrink-0">
                 <!-- Soundwave Equalizer & Live Running Clock -->
                 <div class="text-right hidden sm:flex items-center space-x-3">
                     <div class="eq-container">
@@ -197,21 +236,64 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/admin';
                 </div>
                 
                 <!-- Background Music Toggle Button in Admin Header -->
-                <button type="button" onclick="toggleBarberMusic()" id="navbar-music-toggle" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 text-xs font-bold transition flex items-center space-x-1.5 shadow-sm btn-magnetic" title="Putar / Jeda Musik Barbershop">
+                <button type="button" onclick="toggleBarberMusic()" id="navbar-music-toggle" class="px-2.5 md:px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 text-xs font-bold transition flex items-center space-x-1.5 shadow-sm btn-magnetic" title="Putar / Jeda Musik Barbershop">
                     <i class="fas fa-music text-xs text-emerald-400"></i>
                     <span id="navbar-music-label" class="hidden md:inline font-bold">Musik: OFF</span>
                 </button>
 
                 <!-- Web Tamu shortcut -->
-                <a href="/" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center space-x-1.5 border border-white/10 shadow-sm btn-magnetic" title="Buka Halaman Tamu / Pelanggan">
+                <a href="/" class="px-2.5 md:px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center space-x-1.5 border border-white/10 shadow-sm btn-magnetic" title="Buka Halaman Tamu / Pelanggan">
                     <i class="fas fa-external-link-alt text-[10px]"></i>
                     <span class="hidden md:inline">Web Tamu</span>
                 </a>
             </div>
         </header>
 
+        <!-- Bar Navigasi Cepat Khusus HP (md:hidden — Tidak muncul di Laptop!) -->
+        <div class="md:hidden bg-slate-900/95 border-b border-white/10 px-3 py-2 flex items-center space-x-2 overflow-x-auto flex-shrink-0 text-xs font-bold" style="-webkit-overflow-scrolling: touch;">
+            <a href="/admin" class="whitespace-nowrap px-3 py-1.5 rounded-xl flex items-center space-x-1.5 transition <?= ($currentUri === '/admin') ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/5 text-slate-300' ?>">
+                <i class="fas fa-th-large text-[11px]"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/admin/orders" class="whitespace-nowrap px-3 py-1.5 rounded-xl flex items-center space-x-1.5 transition <?= str_starts_with($currentUri, '/admin/orders') ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/5 text-slate-300' ?>">
+                <i class="fas fa-shopping-cart text-[11px]"></i>
+                <span>Kelola Pesanan</span>
+            </a>
+            <a href="/admin/analytics" class="whitespace-nowrap px-3 py-1.5 rounded-xl flex items-center space-x-1.5 transition <?= str_starts_with($currentUri, '/admin/analytics') ? 'bg-purple-600 text-white shadow-sm' : 'bg-white/5 text-slate-300' ?>">
+                <i class="fas fa-chart-bar text-[11px] text-purple-300"></i>
+                <span>Rekap & Analitik</span>
+            </a>
+            <a href="/admin/items" class="whitespace-nowrap px-3 py-1.5 rounded-xl flex items-center space-x-1.5 transition <?= str_starts_with($currentUri, '/admin/items') ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/5 text-slate-300' ?>">
+                <i class="fas fa-scissors text-[11px]"></i>
+                <span>Daftar Item</span>
+            </a>
+            <a href="/admin/users" class="whitespace-nowrap px-3 py-1.5 rounded-xl flex items-center space-x-1.5 transition <?= str_starts_with($currentUri, '/admin/users') ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/5 text-slate-300' ?>">
+                <i class="fas fa-user-friends text-[11px]"></i>
+                <span>Users & Barber</span>
+            </a>
+            <a href="/logout" class="whitespace-nowrap px-3 py-1.5 rounded-xl flex items-center space-x-1.5 bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                <i class="fas fa-sign-out-alt text-[11px]"></i>
+                <span>Keluar</span>
+            </a>
+        </div>
+
+        <script>
+        function toggleAdminMobileSidebar(open) {
+            const sb = document.getElementById('admin-sidebar');
+            const bd = document.getElementById('admin-sidebar-backdrop');
+            if (!sb || !bd) return;
+            if (open) {
+                sb.classList.add('mobile-open');
+                bd.classList.remove('hidden');
+            } else {
+                sb.classList.remove('mobile-open');
+                bd.classList.add('hidden');
+            }
+        }
+        </script>
+
         <!-- Dynamic Body View -->
-        <main class="flex-1 p-6 sm:p-8 overflow-y-auto relative z-10" style="flex: 1 1 0%; overflow-y: auto;">
+        <main class="flex-1 p-3.5 sm:p-6 md:p-8 overflow-y-auto relative z-10" style="flex: 1 1 0%; overflow-y: auto; -webkit-overflow-scrolling: touch;">
             <!-- Flash Alert Messages -->
             <?php if (!empty($success)): ?>
             <div class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 px-4 py-3 rounded-2xl flex items-center justify-between mb-6 shadow-lg backdrop-blur-md auto-dismiss">
@@ -446,7 +528,7 @@ $currentUri = $_SERVER['REQUEST_URI'] ?? '/admin';
     }
     </script>
 
-    <script src="/js/app.js"></script>
+    <script src="/js/app.js?v=20261120b"></script>
     <script>
         // Admin Background Brightness Controller
         let adminBgState = 0;

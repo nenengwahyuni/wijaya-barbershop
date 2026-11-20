@@ -654,6 +654,10 @@ function getBarberAudioContext() {
 // 1. Suara Ketukan Tunggal (1 Single Tactile Knock) untuk SEMUA Fitur, Tombol, Menu & Link
 function playGeneralClickSound() {
     try {
+        if (window.self !== window.top && window.top && typeof window.top.playGeneralClickSound === 'function') {
+            window.top.playGeneralClickSound();
+            return;
+        }
         const ctx = getBarberAudioContext();
         if (!ctx) return;
 
@@ -681,6 +685,10 @@ function playGeneralClickSound() {
 // 2. Suara KHUSUS Klik Keranjang Pemesanan (Shopping Cart Bubble Drop + Bell Chime)
 function playCartSound() {
     try {
+        if (window.self !== window.top && window.top && typeof window.top.playCartSound === 'function') {
+            window.top.playCartSound();
+            return;
+        }
         const ctx = getBarberAudioContext();
         if (!ctx) return;
 
@@ -729,6 +737,10 @@ function playCartSound() {
 // 3. Suara KHUSUS Klik Pemesanan (Acoustic Barber Scissor Double-Snip + Tactile Pop)
 function playOrderSound() {
     try {
+        if (window.self !== window.top && window.top && typeof window.top.playOrderSound === 'function') {
+            window.top.playOrderSound();
+            return;
+        }
         const ctx = getBarberAudioContext();
         if (!ctx) return;
 
@@ -1068,11 +1080,44 @@ function initSoundFXBindings() {
     window.playTransactionSuccessSound = playTransactionSuccessSound;
     window.toggleAudioPreview = toggleAudioPreview;
 
-    // A. GLOBAL POINTERDOWN LISTENER: HANYA 1 KETUKAN TUNGGAL di setiap klik fitur, menu, tombol, tab, dan link
+    // A. GLOBAL CLICK LISTENER: HANYA 1 KETUKAN TUNGGAL saat benar-benar KLIK fitur/tombol/menu (TIDAK berbunyi saat scroll di HP)
     if (!window.__wijayaKnockBound) {
         window.__wijayaKnockBound = true;
 
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isTouchScrolling = false;
+        let lastScrollTs = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length > 0) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                isTouchScrolling = false;
+            }
+        }, { passive: true, capture: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches && e.touches.length > 0) {
+                const dx = Math.abs(e.touches[0].clientX - touchStartX);
+                const dy = Math.abs(e.touches[0].clientY - touchStartY);
+                if (dx > 8 || dy > 8) {
+                    isTouchScrolling = true;
+                }
+            }
+        }, { passive: true, capture: true });
+
+        window.addEventListener('scroll', () => {
+            isTouchScrolling = true;
+            lastScrollTs = Date.now();
+        }, { passive: true, capture: true });
+
         const handleInteractiveKnock = (e) => {
+            // Jika jari sedang menggeser / scroll di HP, JANGAN bunyikan ketukan
+            if (isTouchScrolling || (Date.now() - lastScrollTs < 150)) {
+                return;
+            }
+
             const clickable = e.target.closest(
                 'button, ' +
                 'a, ' +
@@ -1084,7 +1129,6 @@ function initSoundFXBindings() {
                 '[onclick], ' +
                 '.cursor-pointer, ' +
                 '.btn-magnetic, ' +
-                '.card-premium, ' +
                 '.period-tab-btn, ' +
                 '.chatbot-qr-btn, ' +
                 'label'
@@ -1173,7 +1217,7 @@ function initSoundFXBindings() {
             playGeneralClickSound();
         };
 
-        document.addEventListener('pointerdown', handleInteractiveKnock, true);
+        document.addEventListener('click', handleInteractiveKnock, true);
     }
 
     // B. Pemicu Suara Transaksi Sukses: HANYA saat ada parameter payment_status=success dan belum pernah berbunyi
